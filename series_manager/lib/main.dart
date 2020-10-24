@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:series_manager/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -16,10 +17,39 @@ class Home extends StatelessWidget{
   }
   AppBar buildAppBar(){
     return AppBar(
-      title: Center(
-        child: Text('Serien'),
+      title: Container(
+        height: 50,
+        child: Stack(
+          children: [
+            Container(
+              child: IconButton(
+                icon: Icon(Icons.search,color: Colors.black),
+                iconSize: 30,
+                onPressed: null,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                    width: 3
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 10,bottom: 10),
+              alignment: AlignmentDirectional.center,
+              child: Text('Serien',
+                style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.black
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.transparent,
       elevation: 0,
     );
   }

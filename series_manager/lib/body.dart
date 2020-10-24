@@ -1,5 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:series_manager/data/database/appDatabase.dart';
+import 'package:series_manager/data/database/service.dart';
+import 'package:series_manager/data/entities/category.dart';
 
 class Body extends StatefulWidget{
   @override
@@ -7,23 +11,74 @@ class Body extends StatefulWidget{
 }
 
 class _Body extends State<Body>{
-  final array = [1,2,3,4,5];
+
+  List<Category> categories;
+  var dbCategory = $FloorAppDatabase.databaseBuilder('category').build();
+  var dbSeries = $FloorAppDatabase.databaseBuilder('series').build();
+
   @override
-  Widget build(BuildContext context) {
+  void initState(){
+    super.initState();
+    _insertDataToDb();
+    _getAllCategories();
+  }
+
+  Future<void> _insertDataToDb() async{
+    await dbCategory.then((value) => value.categoryDao).then((value) => value.deleteAllCategories());
+    var result = await dbCategory.then((value) => value.categoryDao.findAllCategories());
+    if(result.length == 0){
+      var insertCategory = Service.getCategory();
+      for(var item in insertCategory){
+        dbCategory.then((value) => value.categoryDao.insertCategory(item));
+      }
+    }
+  }
+
+  Future<void>_getAllCategories() async {
+    var result = await dbCategory.then((value) => value.categoryDao.findAllCategories());
+    setState(() {
+      categories = result;
+    });
+  }
+
+  categoryListView(Category category,Size size){
+    return Container(
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: Text(
+              category.categoryEnum.toString(),
+              style: TextStyle(
+                fontSize: 24
+              ),
+            ),
+          ),
+        ],
+      ),
+      height: size.height * 0.15
+    );
+  }
+
+  @override
+  Widget build(BuildContext context)  {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
       child: Column(
         children: <Widget>[
-          HeaderBoxWithSearch(size: size),
           Container(
             padding: EdgeInsets.symmetric(vertical: 0),
           ),
-          SizedBox(
-            height: size.height * 0.8,
-            child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: array.length,
-                itemBuilder: (context,index) => SeriesComponent(id: array[index], size: size)
+          Container(
+            height: size.height * 0.9,
+            child: categories == null ? Container(child: Center(child: Text("No Elements"))):
+            ListView.builder(
+              itemCount: categories.length,
+              itemBuilder: (_,int position){
+                return categoryListView(categories[position],size);
+              },
             ),
           ),
         ],
@@ -33,10 +88,10 @@ class _Body extends State<Body>{
 }
 
 class SeriesComponent extends StatelessWidget{
-  SeriesComponent({Key key,@required this.id,@required this.size}):super(key:key);
+  SeriesComponent({Key key,@required this.category,@required this.size}):super(key:key);
 
   final Size size;
-  final int id;
+  final Category category;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,7 +115,7 @@ class SeriesComponent extends StatelessWidget{
         children: <Widget>[
           Center(
             child: Text(
-              id.toString(),
+              category.id.toString(),
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.black

@@ -1,0 +1,4 @@
+enum CategoryEnum{
+  Action,
+  Adventure
+}
