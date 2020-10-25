@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:series_manager/data/entities/categoryenum.dart';
 
 @Entity(tableName: 'category')
 class Category {
@@ -11,8 +10,8 @@ class Category {
 
   Category(this.id,this.categoryEnum);
 
-  Category.fromCategory(this.id,List<CategoryEnum> data,{this.categoryEnum = ''}){
-  this.categoryEnum = data.join(',');
+  Category.fromCategory(this.id,this.categoryEnum){
+   this.categoryEnum = this.categoryEnum.split('.')[1];
  }
 
   stringToMap(String data) {

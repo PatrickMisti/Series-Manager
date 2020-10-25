@@ -15,9 +15,9 @@ class Service{
   }
   static get() {
     List<Category> category = [
-      new Category(1,CategoryEnum.Adventure.toString()),
-      new Category(2,CategoryEnum.Action.toString()),
-      new Category(3,CategoryEnum.Action.toString()),
+      new Category.fromCategory(1,CategoryEnum.Adventure.toString()),
+      new Category.fromCategory(2,CategoryEnum.Action.toString()),
+      new Category.fromCategory(3,CategoryEnum.Action.toString()),
     ];
     final List<Series> series = [
       new Series.fromSeries(["Hasdflkölnsdfnöknasd"],

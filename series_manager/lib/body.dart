@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/database/service.dart';
 import 'package:series_manager/data/entities/category.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Body extends StatefulWidget{
   @override
@@ -24,7 +25,7 @@ class _Body extends State<Body>{
   }
 
   Future<void> _insertDataToDb() async{
-    await dbCategory.then((value) => value.categoryDao).then((value) => value.deleteAllCategories());
+    //await dbCategory.then((value) => value.categoryDao).then((value) => value.deleteAllCategories());
     var result = await dbCategory.then((value) => value.categoryDao.findAllCategories());
     if(result.length == 0){
       var insertCategory = Service.getCategory();
@@ -41,23 +42,44 @@ class _Body extends State<Body>{
     });
   }
 
-  categoryListView(Category category,Size size){
+  Container categoryListView(Category category,Size size){
+    var items = [1,2,3,4,5,6,7,8,9,10];
     return Container(
+      height: size.height *0.35,
       child: Stack(
         children: [
           Positioned(
-            top: 0,
-            left: 0,
+            top: 10,
+            left: 10,
+            bottom: 5,
             child: Text(
-              category.categoryEnum.toString(),
-              style: TextStyle(
-                fontSize: 24
+              category.categoryEnum,
+              style: GoogleFonts.alef(
+                fontSize: 27
               ),
+            ),
+          ),
+          Positioned(
+            top: 10,
+            height: 250,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Container(
+                height: 200,
+                width: size.width,
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                    itemCount: items.length,
+                    itemBuilder: (_,int position){
+                      return SeriesComponent(category: category, size: size);
+                    }
+                ),
+              )
             ),
           ),
         ],
       ),
-      height: size.height * 0.15
     );
   }
 
@@ -95,19 +117,18 @@ class SeriesComponent extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: size.height * 0.15,
-      width: size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      height: 150,
+      width: 150,
+      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 40),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.4),
+        color: Colors.grey,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            offset: Offset(0,40),
-            blurRadius: 50,
-            spreadRadius: 1,
-            color: Colors.black.withOpacity(0.15)
+            offset: Offset(20,20),
+            blurRadius: 10,
+            color: Colors.black.withOpacity(0.25)
           )
         ]
       ),
@@ -126,7 +147,6 @@ class SeriesComponent extends StatelessWidget{
       ),
     );
   }
-
 }
 
 class HeaderBoxWithSearch extends StatelessWidget{
