@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 void main() => runApp(Home());
+final primaryColor = Colors.teal;
 
 class Home extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home:Scaffold(
+        backgroundColor: Colors.black,
         appBar: buildAppBar(),
         body: Body(),
       ),
@@ -23,14 +25,14 @@ class Home extends StatelessWidget{
           children: [
             Container(
               child: IconButton(
-                icon: Icon(Icons.search,color: Colors.black),
+                icon: Icon(Icons.search,color: primaryColor),
                 iconSize: 30,
                 onPressed: null,
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
                 border: Border.all(
-                    color: Colors.black,
+                    color: primaryColor,
                     style: BorderStyle.solid,
                     width: 3
                 ),
@@ -42,7 +44,7 @@ class Home extends StatelessWidget{
               child: Text('Serien',
                 style: TextStyle(
                     fontSize: 24,
-                    color: Colors.black
+                    color: primaryColor
                 ),
               ),
             ),

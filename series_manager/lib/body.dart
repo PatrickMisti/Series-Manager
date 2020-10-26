@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/database/service.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:series_manager/main.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
 
 class Body extends StatefulWidget{
@@ -56,7 +58,8 @@ class _Body extends State<Body>{
             child: Text(
               category.categoryEnum,
               style: GoogleFonts.alef(
-                fontSize: 27
+                fontSize: 27,
+                color: primaryColor
               ),
             ),
           ),
@@ -87,25 +90,56 @@ class _Body extends State<Body>{
   @override
   Widget build(BuildContext context)  {
     Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 0),
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 0),
+              ),
+              Container(
+                height: size.height * 0.9,
+                child: categories == null ? Container(child: Center(child: Text("No Elements"))):
+                ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (_,int position){
+                    return categoryListView(categories[position],size);
+                  },
+                ),
+              ),
+            ],
           ),
-          Container(
-            height: size.height * 0.9,
-            child: categories == null ? Container(child: Center(child: Text("No Elements"))):
-            ListView.builder(
-              itemCount: categories.length,
-              itemBuilder: (_,int position){
-                return categoryListView(categories[position],size);
-              },
+        ),
+        Positioned(
+          bottom:-3,
+          width: size.width,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: size.width/2.3),
+            decoration: BoxDecoration(
+              color: primaryColor,
+              shape: BoxShape.rectangle,
+              boxShadow: [BoxShadow(
+                color: primaryColor,
+                offset: Offset(0,30),
+                spreadRadius: 4,
+
+              )],
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(25),
+                topRight: Radius.circular(25),
+                bottomLeft: Radius.elliptical(-80, 20)
+              ),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.add,color: Colors.black,),
+              iconSize: 30,
+              onPressed: null,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
