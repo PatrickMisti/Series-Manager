@@ -22,13 +22,11 @@ class Service{
     final List<Series> series = [
       new Series.fromSeries(["Hasdflkölnsdfnöknasd"],
           id: 1,
-          name:"One Outs",
-          categoryId: 1
+          name:"One Outs"
       ),
       new Series.fromSeries(["ljkasödfnönasdf"],
           id: 2,
-          name:"Haikyuu!!",
-          categoryId: 1
+          name:"Haikyuu!!"
       ),
     ];
     List convert = new List();

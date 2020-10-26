@@ -64,6 +64,8 @@ class _$AppDatabase extends AppDatabase {
 
   SeriesDao _seriesDaoInstance;
 
+  CategorySeriesDao _categorySeriesDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -84,7 +86,9 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER, `categoriesEnum` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER, `name` TEXT, `video` TEXT, `categoryId` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER, `name` TEXT, `video` TEXT, `photo` BLOB, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -101,6 +105,12 @@ class _$AppDatabase extends AppDatabase {
   SeriesDao get seriesDao {
     return _seriesDaoInstance ??= _$SeriesDao(database, changeListener);
   }
+
+  @override
+  CategorySeriesDao get categorySeriesDao {
+    return _categorySeriesDaoInstance ??=
+        _$CategorySeriesDao(database, changeListener);
+  }
 }
 
 class _$CategoryDao extends CategoryDao {
@@ -109,6 +119,15 @@ class _$CategoryDao extends CategoryDao {
         _categoryInsertionAdapter = InsertionAdapter(
             database,
             'category',
+            (Category item) => <String, dynamic>{
+                  'id': item.id,
+                  'categoriesEnum': item.categoryEnum
+                },
+            changeListener),
+        _categoryUpdateAdapter = UpdateAdapter(
+            database,
+            'category',
+            ['id'],
             (Category item) => <String, dynamic>{
                   'id': item.id,
                   'categoriesEnum': item.categoryEnum
@@ -125,6 +144,8 @@ class _$CategoryDao extends CategoryDao {
       Category(row['id'] as int, row['categoriesEnum'] as String);
 
   final InsertionAdapter<Category> _categoryInsertionAdapter;
+
+  final UpdateAdapter<Category> _categoryUpdateAdapter;
 
   @override
   Future<List<Category>> findAllCategories() async {
@@ -156,6 +177,11 @@ class _$CategoryDao extends CategoryDao {
   Future<void> insertCategory(Category category) async {
     await _categoryInsertionAdapter.insert(category, OnConflictStrategy.abort);
   }
+
+  @override
+  Future<void> updateCategory(Category category) async {
+    await _categoryUpdateAdapter.update(category, OnConflictStrategy.abort);
+  }
 }
 
 class _$SeriesDao extends SeriesDao {
@@ -168,7 +194,18 @@ class _$SeriesDao extends SeriesDao {
                   'id': item.id,
                   'name': item.name,
                   'video': item.video,
-                  'categoryId': item.categoryId
+                  'photo': item.photo
+                },
+            changeListener),
+        _seriesUpdateAdapter = UpdateAdapter(
+            database,
+            'series',
+            ['id'],
+            (Series item) => <String, dynamic>{
+                  'id': item.id,
+                  'name': item.name,
+                  'video': item.video,
+                  'photo': item.photo
                 },
             changeListener);
 
@@ -181,10 +218,12 @@ class _$SeriesDao extends SeriesDao {
   static final _seriesMapper = (Map<String, dynamic> row) => Series(
       row['id'] as int,
       row['name'] as String,
-      row['categoryId'] as int,
-      row['video'] as String);
+      row['video'] as String,
+      row['photo'] as Uint8List);
 
   final InsertionAdapter<Series> _seriesInsertionAdapter;
+
+  final UpdateAdapter<Series> _seriesUpdateAdapter;
 
   @override
   Future<List<Series>> findAllSeries() async {
@@ -193,9 +232,12 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
-  Stream<Series> getSeriesById() {
-    return _queryAdapter.queryStream('Select * from Series',
-        queryableName: 'series', isView: false, mapper: _seriesMapper);
+  Stream<Series> getSeriesById(int id) {
+    return _queryAdapter.queryStream('Select * from Series where id = ?',
+        arguments: <dynamic>[id],
+        queryableName: 'series',
+        isView: false,
+        mapper: _seriesMapper);
   }
 
   @override
@@ -212,5 +254,87 @@ class _$SeriesDao extends SeriesDao {
   @override
   Future<void> insertSeries(Series series) async {
     await _seriesInsertionAdapter.insert(series, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateSeries(Series series) async {
+    await _seriesUpdateAdapter.update(series, OnConflictStrategy.abort);
+  }
+}
+
+class _$CategorySeriesDao extends CategorySeriesDao {
+  _$CategorySeriesDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _categorySeriesInsertionAdapter = InsertionAdapter(
+            database,
+            'categoryseries',
+            (CategorySeries item) => <String, dynamic>{
+                  'id': item.id,
+                  'category_id': item.categoryId,
+                  'series_id': item.seriesId
+                },
+            changeListener),
+        _categorySeriesUpdateAdapter = UpdateAdapter(
+            database,
+            'categoryseries',
+            ['id'],
+            (CategorySeries item) => <String, dynamic>{
+                  'id': item.id,
+                  'category_id': item.categoryId,
+                  'series_id': item.seriesId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  static final _categoryseriesMapper = (Map<String, dynamic> row) =>
+      CategorySeries(
+          row['id'] as int, row['category_id'] as int, row['series_id'] as int);
+
+  final InsertionAdapter<CategorySeries> _categorySeriesInsertionAdapter;
+
+  final UpdateAdapter<CategorySeries> _categorySeriesUpdateAdapter;
+
+  @override
+  Future<List<CategorySeries>> findAllCategorySeries() async {
+    return _queryAdapter.queryList('Select * from CategorySeries',
+        mapper: _categoryseriesMapper);
+  }
+
+  @override
+  Stream<CategorySeries> getCategorySeriesById(int id) {
+    return _queryAdapter.queryStream(
+        'Select * from CategorySeries where id = ?',
+        arguments: <dynamic>[id],
+        queryableName: 'categoryseries',
+        isView: false,
+        mapper: _categoryseriesMapper);
+  }
+
+  @override
+  Future<void> deleteCategorySeries(int id) async {
+    await _queryAdapter.queryNoReturn('Delete from CategorySeries where id = ?',
+        arguments: <dynamic>[id]);
+  }
+
+  @override
+  Future<void> deleteAllCategorySeries() async {
+    await _queryAdapter.queryNoReturn('Delete from CategorySeries');
+  }
+
+  @override
+  Future<void> insertCategorySeries(CategorySeries categorySeries) async {
+    await _categorySeriesInsertionAdapter.insert(
+        categorySeries, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateCategorySeries(CategorySeries categorySeries) async {
+    await _categorySeriesUpdateAdapter.update(
+        categorySeries, OnConflictStrategy.abort);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:floor/floor.dart';
 
 @Entity(tableName: 'series')
@@ -6,12 +8,12 @@ class Series {
   final int id;
   final String name;
   String video;
-  final int categoryId;
+  final Uint8List photo;
 
 
-  Series(this.id, this.name, this.categoryId, this.video);
+  Series(this.id, this.name, this.video,this.photo);
 
-  Series.fromSeries(List<dynamic> data, {this.id, this.name,this.categoryId}){
+  Series.fromSeries(List<dynamic> data, {this.id, this.name, this.photo}){
     mapToString(data);
   }
 
