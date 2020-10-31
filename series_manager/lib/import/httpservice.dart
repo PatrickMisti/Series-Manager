@@ -10,6 +10,7 @@ class HttpService{
 
   Future getDataFromInternet() async{
     var result = await _httpResponse(url,0);
+    
     List episodeAndSeason = new List<Map>();
     for(var item in result) {
       var element = await _getEpisodeFromSeason(item["href"].toString());
@@ -32,6 +33,8 @@ class HttpService{
         .then((value) => value.body)
         .then((value) => value.replaceAll("\r\n", '').replaceAll("\n", ''));
     var html = parse(response);
+    var title = html.querySelector("h1[title]").nodes[0].nodes[0].text; // titel von der Serie
+    var image = html.querySelector("div.seriesCoverBox").nodes[0].attributes["data-src"]; //https://serienstream.sx/+ imageurl
     var body = html.getElementById('stream');
     var links = body.getElementsByTagName('ul');
     var item = links[index]
