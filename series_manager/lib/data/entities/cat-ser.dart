@@ -17,4 +17,6 @@ class CategorySeries {
   final int seriesId;
 
   CategorySeries(this.id, this.categoryId, this.seriesId);
+
+  CategorySeries.fetching({this.id, this.categoryId, this.seriesId});
 }

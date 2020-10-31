@@ -15,6 +15,8 @@ class Series {
 
   Series(this.id, this.name, this.video,this.photo,this.episode,this.season);
 
+  Series.fetching({this.id, this.name, this.video,this.photo,this.episode,this.season});
+
   Series.fromSeries(List<dynamic> data, {this.id, this.name, this.photo,this.season,this.episode}){
     mapToString(data);
   }

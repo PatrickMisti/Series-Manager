@@ -12,7 +12,7 @@ abstract class CategoryDao{
   Stream<Category> getCategoryById(int id);
 
   @insert
-  Future<void> insertCategory(Category category);
+  Future<int> insertCategory(Category category);
 
   @update
   Future<void> updateCategory(Category category);
@@ -34,7 +34,7 @@ abstract class SeriesDao{
   Stream<Series> getSeriesById(int id);
 
   @insert
-  Future<void> insertSeries(Series series);
+  Future<int> insertSeries(Series series);
 
   @update
   Future<void> updateSeries(Series series);
@@ -56,7 +56,7 @@ abstract class CategorySeriesDao{
   Stream<CategorySeries> getCategorySeriesById(int id);
 
   @insert
-  Future<void> insertCategorySeries(CategorySeries categorySeries);
+  Future<int> insertCategorySeries(CategorySeries categorySeries);
 
   @update
   Future<void> updateCategorySeries(CategorySeries categorySeries);

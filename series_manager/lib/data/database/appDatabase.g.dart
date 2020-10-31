@@ -174,8 +174,9 @@ class _$CategoryDao extends CategoryDao {
   }
 
   @override
-  Future<void> insertCategory(Category category) async {
-    await _categoryInsertionAdapter.insert(category, OnConflictStrategy.abort);
+  Future<int> insertCategory(Category category) {
+    return _categoryInsertionAdapter.insertAndReturnId(
+        category, OnConflictStrategy.abort);
   }
 
   @override
@@ -258,8 +259,9 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
-  Future<void> insertSeries(Series series) async {
-    await _seriesInsertionAdapter.insert(series, OnConflictStrategy.abort);
+  Future<int> insertSeries(Series series) {
+    return _seriesInsertionAdapter.insertAndReturnId(
+        series, OnConflictStrategy.abort);
   }
 
   @override
@@ -333,8 +335,8 @@ class _$CategorySeriesDao extends CategorySeriesDao {
   }
 
   @override
-  Future<void> insertCategorySeries(CategorySeries categorySeries) async {
-    await _categorySeriesInsertionAdapter.insert(
+  Future<int> insertCategorySeries(CategorySeries categorySeries) {
+    return _categorySeriesInsertionAdapter.insertAndReturnId(
         categorySeries, OnConflictStrategy.abort);
   }
 
