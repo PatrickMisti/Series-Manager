@@ -6,6 +6,7 @@ import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/database/service.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:series_manager/import/httpservice.dart';
 import 'package:series_manager/main.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
 
@@ -18,6 +19,7 @@ class _Body extends State<Body>{
 
   List<Category> categories;
   DataBaseExtension db;
+  HttpService service;
 
   @override
   void initState(){
@@ -28,6 +30,8 @@ class _Body extends State<Body>{
   }
 
   Future<void> _insertDataToDb() async{
+    service = new HttpService();
+    var all = await service.getDataFromInternet();
     var result = await db.getAll<Category>();
     //await db.deleteAll<Category>();
     if(result.length == 0){

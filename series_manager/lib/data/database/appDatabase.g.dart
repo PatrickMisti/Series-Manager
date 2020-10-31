@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER, `categoriesEnum` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER, `name` TEXT, `video` TEXT, `photo` BLOB, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER, `name` TEXT, `video` TEXT, `photo` BLOB, `episode` INTEGER, `season` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
 
@@ -194,7 +194,9 @@ class _$SeriesDao extends SeriesDao {
                   'id': item.id,
                   'name': item.name,
                   'video': item.video,
-                  'photo': item.photo
+                  'photo': item.photo,
+                  'episode': item.episode,
+                  'season': item.season
                 },
             changeListener),
         _seriesUpdateAdapter = UpdateAdapter(
@@ -205,7 +207,9 @@ class _$SeriesDao extends SeriesDao {
                   'id': item.id,
                   'name': item.name,
                   'video': item.video,
-                  'photo': item.photo
+                  'photo': item.photo,
+                  'episode': item.episode,
+                  'season': item.season
                 },
             changeListener);
 
@@ -219,7 +223,9 @@ class _$SeriesDao extends SeriesDao {
       row['id'] as int,
       row['name'] as String,
       row['video'] as String,
-      row['photo'] as Uint8List);
+      row['photo'] as Uint8List,
+      row['episode'] as int,
+      row['season'] as int);
 
   final InsertionAdapter<Series> _seriesInsertionAdapter;
 

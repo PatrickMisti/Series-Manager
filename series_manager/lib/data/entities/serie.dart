@@ -9,11 +9,13 @@ class Series {
   final String name;
   String video;
   final Uint8List photo;
+  final int episode;
+  final int season;
 
 
-  Series(this.id, this.name, this.video,this.photo);
+  Series(this.id, this.name, this.video,this.photo,this.episode,this.season);
 
-  Series.fromSeries(List<dynamic> data, {this.id, this.name, this.photo}){
+  Series.fromSeries(List<dynamic> data, {this.id, this.name, this.photo,this.season,this.episode}){
     mapToString(data);
   }
 

@@ -28,6 +28,9 @@ dependencies:
   path:
   floor: ^0.14.0
   google_fonts: ^1.1.1
+  http: ^0.12.2
+  xml_parser: ^0.1.2
+  html: ^0.14.0+4
 
 
   # The following adds the Cupertino Icons font to your application.
