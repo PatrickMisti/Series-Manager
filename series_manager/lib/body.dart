@@ -8,6 +8,7 @@ import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
+import 'package:series_manager/views/BottomSheetSetLink.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
 
 class Body extends StatefulWidget{
@@ -104,7 +105,7 @@ class _Body extends State<Body>{
                 padding: EdgeInsets.symmetric(vertical: 0),
               ),
               Container(
-                height: size.height * 0.9,
+                height: size.height - 50,
                 child: categories == null ? Container(child: Center(child: Text("No Elements"))):
                 ListView.builder(
                   itemCount: categories.length,
@@ -116,33 +117,7 @@ class _Body extends State<Body>{
             ],
           ),
         ),
-        Positioned(
-          bottom:-3,
-          width: size.width,
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: size.width/2.3),
-            decoration: BoxDecoration(
-              color: primaryColor,
-              shape: BoxShape.rectangle,
-              boxShadow: [BoxShadow(
-                color: primaryColor,
-                offset: Offset(0,30),
-                spreadRadius: 4,
-
-              )],
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-                bottomLeft: Radius.elliptical(-80, 20)
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.add,color: Colors.black,),
-              iconSize: 30,
-              onPressed: null,
-            ),
-          ),
-        ),
+        BottomSheetSetLink(size: size),
       ],
     );
   }

@@ -10,17 +10,21 @@ class Home extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home:Scaffold(
-        backgroundColor: Colors.black,
-        appBar: buildAppBar(),
-        body: Body(),
-      ),
+      initialRoute: '/',
+      routes: {
+        '/' : (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: buildAppBar(),
+          body: Body(),
+        ),
+      },
     );
   }
   AppBar buildAppBar(){
     return AppBar(
+      toolbarHeight: 60,
       title: Container(
-        height: 50,
+        height:  50,
         child: Stack(
           children: [
             Container(
