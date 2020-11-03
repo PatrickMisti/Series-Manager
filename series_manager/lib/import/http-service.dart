@@ -18,7 +18,7 @@ class HttpService{
           .then((value) => value.body)
           .then((value) => value.replaceAll("\r\n", '').replaceAll("\n", ''));
 
-  Future getEpisodeAndSeasonFromUrl(String url) async => await _getEpisodeAndSeason(await _httpResponseConvert(url,0), url);
+  Future<List<Map>> getEpisodeAndSeasonFromUrl(String url) async => await _getEpisodeAndSeason(await _httpResponseConvert(url,0), url);
 
   Future<void> getDataSaveInDb(String url) async {
     var result = await _httpClient(url);
@@ -94,7 +94,7 @@ class HttpService{
     return item;
   }
 
-  Future _getEpisodeAndSeason(List<LinkedHashMap<dynamic,String>> result,uri) async {
+  Future<List<Map>> _getEpisodeAndSeason(List<LinkedHashMap<dynamic,String>> result,uri) async {
     List episodeAndSeason = new List<Map>();
     for(var item in result) {
       var element = await _httpResponseConvert(uri + item["href"].toString().split('/').last, 1);

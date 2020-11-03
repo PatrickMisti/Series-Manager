@@ -46,7 +46,7 @@ class DataBaseExtension{
       await _dbCategory.then((value) => value.categoryDao).then((value) => value.insertCategory(entity as Category));
     }
     else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.insertCategorySeries(entity as CategorySeries));
+      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.insertCategorySeries(entity as CategorySeries));
     }
   }
 
@@ -58,7 +58,7 @@ class DataBaseExtension{
       await _dbCategory.then((value) => value.categoryDao).then((value) => value.updateCategory(entity as Category));
     }
     else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.updateCategorySeries(entity as CategorySeries));
+      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.updateCategorySeries(entity as CategorySeries));
     }
   }
 
@@ -70,7 +70,7 @@ class DataBaseExtension{
       await _dbCategory.then((value) => value.categoryDao).then((value) => value.deleteCategory(entityId));
     }
     else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteCategorySeries(entityId));
+      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteCategorySeries(entityId));
     }
   }
   deleteAll<T>() async{
@@ -81,7 +81,8 @@ class DataBaseExtension{
       await _dbCategory.then((value) => value.categoryDao).then((value) => value.deleteAllCategories());
     }
     else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteAllCategorySeries());
+      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteAllCategorySeries());
     }
   }
+
 }

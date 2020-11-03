@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/main.dart';
 
 class BottomSheetSetLink extends StatefulWidget {
@@ -13,11 +14,44 @@ class BottomSheetSetLink extends StatefulWidget {
 }
 class _BottomSheetSetLink extends State<BottomSheetSetLink> {
   Size size;
-
+  TextEditingController _linkInput;
 
   _BottomSheetSetLink({@required this.size});
 
 
+  showBottomSheetForm(){
+    return Container(
+      height: 20,
+      padding: EdgeInsets.only(top: 30,left: 20,right: 20,bottom: 30),
+      child: Column(
+        children: [
+          Text(
+            "Bitte geben sie hier ihren Link ein!",
+            style: GoogleFonts.alegreyaSc(
+              fontSize: 20.5
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 30),
+            child: TextField(
+              controller: _linkInput,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: "Beispiel 'http://serienstream.sx/serie\n/stream/the-walking-dead/'",
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25))
+                ),
+              ),
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20))
+            )
+          ),
+        ],
+      ),
+    );
+  }
 
   actionSheet(context){
     return showModalBottomSheet(
@@ -31,13 +65,13 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> {
               Expanded(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
-                  height: size.height *0.1,
+                  height: size.height *0.2,
                   width: size.width,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(25)),
                       color: Colors.white
                   ),
-                  child: Text("halllo",style: TextStyle(color: primaryColor)),
+                  child: showBottomSheetForm()
                 ),
               ),
               SizedBox(height: 10),
