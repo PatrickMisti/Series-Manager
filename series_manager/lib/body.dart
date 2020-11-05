@@ -117,7 +117,7 @@ class _Body extends State<Body>{
             ],
           ),
         ),
-        BottomSheetSetLink(size: size),
+        BottomSheetSetLink(size),
       ],
     );
   }
