@@ -32,7 +32,9 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink>
   _BottomSheetSetLink(this.size);
 
   getLinkAndSave() {
-
+    if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length > 3) {
+      //todo safe link split [0] //[2]/[3]
+    }
   }
 
   showBottomSheetForm() {
@@ -106,7 +108,11 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink>
                   right: 20,
                   child: FlatButton(
                     height: 50,
-                    onPressed: () => {getLinkAndSave(), Navigator.pop(content)},
+                    onPressed: () {
+                      getLinkAndSave();
+                      Navigator.pop(content);
+                      _linkInput.text = '';
+                    },
                     color: Colors.white,
                     child: Text(
                       "Speichern",
