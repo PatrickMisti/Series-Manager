@@ -3,11 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
-import 'package:series_manager/data/database/service.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:series_manager/data/entities/serie.dart';
-import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
 import 'package:series_manager/views/BottomSheetSetLink.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
@@ -19,7 +16,6 @@ class Body extends StatefulWidget {
 
 class _Body extends State<Body> {
   DataBaseExtension db;
-  HttpService service;
 
   @override
   void initState() {
@@ -29,18 +25,10 @@ class _Body extends State<Body> {
   }
 
   Future<void> _insertDataToDb() async {
-    //var result = await db.getAll<Category>();
     await db.deleteAll<Category>();
-    /*if(result.length == 0){
-      var insertCategory = Service.getCategory();
-      for(var item in insertCategory){
-        await db.insert<Category>(item);
-      }
-    }*/
   }
 
   Container categoryListView(Category category, Size size) {
-    var items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     return Container(
       height: size.height * 0.35,
       child: Stack(
@@ -64,22 +52,21 @@ class _Body extends State<Body> {
                     width: size.width,
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: FutureBuilder(
-                      future: db.getAll<Series>(),
+                      future: db.getSeriesFromCategory(category.id),
                       builder: (context, snapshot) {
                         return snapshot.hasData
                             ? ListView.builder(
                                 itemCount: snapshot.data.length,
                                 itemBuilder: (_, int position) {
                                   return SeriesComponent(
-                                      category: null, size: null); //todo
+                                      series: snapshot.data[position],
+                                      size: size);
                                 })
                             : Center(
                                 child: Text("No Data send Patrick mail"),
                               );
                       },
-                    )
-                )
-            ),
+                    ))),
           ),
         ],
       ),
@@ -103,15 +90,28 @@ class _Body extends State<Body> {
                 child: FutureBuilder(
                   future: db.getAll<Category>(),
                   builder: (context, snapshot) {
-                    return snapshot.hasData
+                    return snapshot.hasData && snapshot.data.length > 0
                         ? ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: (_, int position) {
                               return categoryListView(
                                   snapshot.data[position], size);
                             })
-                        : Center(
-                            child: CircularProgressIndicator(),
+                        : Container(
+                            padding: EdgeInsets.only(top: size.height * 0.5),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "No Content please add some Links",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  Icon(Icons.arrow_downward,
+                                      color: Colors.white, size: 50),
+                                ],
+                              ),
+                            ),
                           );
                   },
                 ),

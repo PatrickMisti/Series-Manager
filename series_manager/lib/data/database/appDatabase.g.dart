@@ -115,15 +115,14 @@ class _$AppDatabase extends AppDatabase {
 
 class _$CategoryDao extends CategoryDao {
   _$CategoryDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _categoryInsertionAdapter = InsertionAdapter(
             database,
             'category',
             (Category item) => <String, dynamic>{
                   'id': item.id,
                   'categoriesEnum': item.categoryEnum
-                },
-            changeListener),
+                }),
         _categoryUpdateAdapter = UpdateAdapter(
             database,
             'category',
@@ -131,8 +130,7 @@ class _$CategoryDao extends CategoryDao {
             (Category item) => <String, dynamic>{
                   'id': item.id,
                   'categoriesEnum': item.categoryEnum
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -154,12 +152,9 @@ class _$CategoryDao extends CategoryDao {
   }
 
   @override
-  Stream<Category> getCategoryById(int id) {
-    return _queryAdapter.queryStream('Select * from Category where id == ?',
-        arguments: <dynamic>[id],
-        queryableName: 'category',
-        isView: false,
-        mapper: _categoryMapper);
+  Future<List<Category>> getCategoryById(int id) async {
+    return _queryAdapter.queryList('Select * from Category where id == ?',
+        arguments: <dynamic>[id], mapper: _categoryMapper);
   }
 
   @override
@@ -187,7 +182,7 @@ class _$CategoryDao extends CategoryDao {
 
 class _$SeriesDao extends SeriesDao {
   _$SeriesDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _seriesInsertionAdapter = InsertionAdapter(
             database,
             'series',
@@ -198,8 +193,7 @@ class _$SeriesDao extends SeriesDao {
                   'photo': item.photo,
                   'episode': item.episode,
                   'season': item.season
-                },
-            changeListener),
+                }),
         _seriesUpdateAdapter = UpdateAdapter(
             database,
             'series',
@@ -211,8 +205,7 @@ class _$SeriesDao extends SeriesDao {
                   'photo': item.photo,
                   'episode': item.episode,
                   'season': item.season
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -239,12 +232,9 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
-  Stream<Series> getSeriesById(int id) {
-    return _queryAdapter.queryStream('Select * from Series where id = ?',
-        arguments: <dynamic>[id],
-        queryableName: 'series',
-        isView: false,
-        mapper: _seriesMapper);
+  Future<List<Series>> getSeriesById(int id) async {
+    return _queryAdapter.queryList('Select * from Series where id = ?',
+        arguments: <dynamic>[id], mapper: _seriesMapper);
   }
 
   @override
@@ -272,7 +262,7 @@ class _$SeriesDao extends SeriesDao {
 
 class _$CategorySeriesDao extends CategorySeriesDao {
   _$CategorySeriesDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _categorySeriesInsertionAdapter = InsertionAdapter(
             database,
             'categoryseries',
@@ -280,8 +270,7 @@ class _$CategorySeriesDao extends CategorySeriesDao {
                   'id': item.id,
                   'category_id': item.categoryId,
                   'series_id': item.seriesId
-                },
-            changeListener),
+                }),
         _categorySeriesUpdateAdapter = UpdateAdapter(
             database,
             'categoryseries',
@@ -290,8 +279,7 @@ class _$CategorySeriesDao extends CategorySeriesDao {
                   'id': item.id,
                   'category_id': item.categoryId,
                   'series_id': item.seriesId
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -314,13 +302,9 @@ class _$CategorySeriesDao extends CategorySeriesDao {
   }
 
   @override
-  Stream<CategorySeries> getCategorySeriesById(int id) {
-    return _queryAdapter.queryStream(
-        'Select * from CategorySeries where id = ?',
-        arguments: <dynamic>[id],
-        queryableName: 'categoryseries',
-        isView: false,
-        mapper: _categoryseriesMapper);
+  Future<List<CategorySeries>> getCategorySeriesById(int id) async {
+    return _queryAdapter.queryList('Select * from CategorySeries where id = ?',
+        arguments: <dynamic>[id], mapper: _categoryseriesMapper);
   }
 
   @override

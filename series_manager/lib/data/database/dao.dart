@@ -9,7 +9,7 @@ abstract class CategoryDao{
   Future<List<Category>> findAllCategories();
 
   @Query('Select * from Category where id == :id')
-  Stream<Category> getCategoryById(int id);
+  Future<List<Category>> getCategoryById(int id);
 
   @insert
   Future<int> insertCategory(Category category);
@@ -31,7 +31,7 @@ abstract class SeriesDao{
   Future<List<Series>> findAllSeries();
 
   @Query('Select * from Series where id = :id')
-  Stream<Series> getSeriesById(int id);
+  Future<List<Series>> getSeriesById(int id);
 
   @insert
   Future<int> insertSeries(Series series);
@@ -53,7 +53,7 @@ abstract class CategorySeriesDao{
   Future<List<CategorySeries>> findAllCategorySeries();
 
   @Query('Select * from CategorySeries where id = :id')
-  Stream<CategorySeries> getCategorySeriesById(int id);
+  Future<List<CategorySeries>> getCategorySeriesById(int id);
 
   @insert
   Future<int> insertCategorySeries(CategorySeries categorySeries);

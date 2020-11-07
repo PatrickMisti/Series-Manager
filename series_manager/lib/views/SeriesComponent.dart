@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:series_manager/data/entities/category.dart';
+import 'package:series_manager/data/entities/serie.dart';
 
 class SeriesComponent extends StatelessWidget{
-  SeriesComponent({Key key,@required this.category,@required this.size}):super(key:key);
+  SeriesComponent({Key key,@required this.series,@required this.size}):super(key:key);
 
   final Size size;
-  final Category category;
+  final Series series;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +22,7 @@ class SeriesComponent extends StatelessWidget{
         children: <Widget>[
           Center(
             child: Text(
-              category.id.toString(),
+              series.id.toString(),
               style: TextStyle(
                   fontSize: 18,
                   color: Colors.black

@@ -1,9 +1,8 @@
 import 'package:test/test.dart';
-import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/import/http-service.dart';
 
 void main(){
-  DataBaseExtension db;
+  //DataBaseExtension db;
   setUp((){
     //runApp(Home());
   });
