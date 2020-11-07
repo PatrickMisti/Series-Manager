@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path/path.dart';
+import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
 
 class BottomSheetSetLink extends StatefulWidget {
@@ -15,29 +19,35 @@ class BottomSheetSetLink extends StatefulWidget {
   _BottomSheetSetLink createState() => _BottomSheetSetLink(this.size);
 }
 
-class _BottomSheetSetLink extends State<BottomSheetSetLink>
-    with SingleTickerProviderStateMixin {
+class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerProviderStateMixin {
   final Size size;
   final _linkInput = TextEditingController();
   double _bottomViewSize = 0.45;
   FocusNode _focusOnTextField = FocusNode();
+  HttpService _service;
 
 
   @override
   void initState() {
     super.initState();
+    _service = new HttpService();
     _focusOnTextField.addListener(() => _bottomViewSize = _focusOnTextField.hasFocus ? 0.85 : 0.45);
   }
 
   _BottomSheetSetLink(this.size);
 
   getLinkAndSave() {
-    if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length > 3) {
-      //todo safe link split [0] //[2]/[3]
+    if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length >= 6) {
+      var createLink = _linkInput.text
+          .split('/')
+          .sublist(0,6)
+          .join('/');
+      log(createLink);
+      _service.getDataSaveInDb(createLink);
     }
   }
 
-  showBottomSheetForm() {
+  showBottomSheetForm(context) {
     var bottomSheetKey = Key('container');
     return Container(
       key: bottomSheetKey,
@@ -70,7 +80,9 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink>
                 ),
               ),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+                  borderRadius: BorderRadius.all(Radius.circular(20)))
+          ),
+          //todo maybe witch provider textfield
         ],
       ),
     );
@@ -99,7 +111,7 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink>
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(25)),
                         color: Colors.white),
-                    child: showBottomSheetForm(),
+                    child: showBottomSheetForm(content),
                   ),
                 ),
                 Positioned(
