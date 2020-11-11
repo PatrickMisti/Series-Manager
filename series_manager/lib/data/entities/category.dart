@@ -2,7 +2,7 @@ import 'package:floor/floor.dart';
 
 @Entity(tableName: 'category')
 class Category {
- @primaryKey
+ @PrimaryKey(autoGenerate: true)
  int id;
  @ColumnInfo(name: 'categoriesEnum',nullable: false)
  String categoryEnum;

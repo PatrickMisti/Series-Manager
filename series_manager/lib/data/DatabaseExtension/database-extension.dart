@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/entities/cat-ser.dart';
 import 'package:series_manager/data/entities/category.dart';
@@ -5,89 +6,92 @@ import 'package:series_manager/data/entities/category.dart';
 import 'package:series_manager/data/entities/serie.dart';
 
 class DataBaseExtension{
-  var _dbCategory;
-  var _dbSeries;
-  var _dbCategorySeries;
+  static AppDatabase _db;
 
-  DataBaseExtension() {
-    _dbCategory = $FloorAppDatabase.databaseBuilder('category').build();
-    _dbSeries = $FloorAppDatabase.databaseBuilder('series').build();
-    _dbCategorySeries = $FloorAppDatabase.databaseBuilder('categoryseries').build();
+   static init() async {
+     _db = await $FloorAppDatabase.databaseBuilder('manager.db').build();
+     //_db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build(); // for testing
   }
 
-   getAll<T>() async{
+  static getAll<T>() async{
     if(T == Series){
-      return await _dbSeries.then((value) => value.seriesDao).then((value) => value.findAllSeries());
+      return await _db.seriesDao.findAllSeries();
     }
     else if(T == Category){
-      return await _dbCategory.then((value) => value.categoryDao).then((value) => value.findAllCategories());
+      return await _db.categoryDao.findAllCategories();
     }
     else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.findAllCategorySeries());
-    }
-  }
-  findById<T>(int entityId) async{
-    if(T == Series){
-      return await _dbSeries.then((value) => value.seriesDao).then((value) => value.getSeriesById(entityId));
-    }
-    else if(T == Category) {
-      return await _dbCategory.then((value) => value.categoryDao).then((value) => value.getCategoryById(entityId));
-    }
-    else if(T == CategorySeries){
-      return await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.getCategorySeriesById(entityId));
+      return await _db.categorySeriesDao.findAllCategorySeries();
     }
   }
 
-  insert<T>(T entity) async{
+  static findById<T>(int entityId) async{
     if(T == Series){
-      await _dbSeries.then((value) => value.seriesDao).then((value) => value.insertSeries(entity as Series));
+      return await _db.seriesDao.getSeriesById(entityId);
     }
     else if(T == Category) {
-      await _dbCategory.then((value) => value.categoryDao).then((value) => value.insertCategory(entity as Category));
+      return await _db.categoryDao.getCategoryById(entityId);
     }
     else if(T == CategorySeries){
-      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.insertCategorySeries(entity as CategorySeries));
+      return await _db.categorySeriesDao.getCategorySeriesById(entityId);
     }
   }
 
-  update<T>(T entity) async{
-    if(T == Series){
-      await _dbSeries.then((value) => value.seriesDao).then((value) => value.updateSeries(entity as Series));
+  static insert<T>(T entity) async{
+    if(entity is Series){
+      return await _db.seriesDao.insertSeries(entity);
     }
-    else if(T == Category) {
-      await _dbCategory.then((value) => value.categoryDao).then((value) => value.updateCategory(entity as Category));
+    else if(entity is Category) {
+      return await _db.categoryDao.insertCategory(entity);
     }
-    else if(T == CategorySeries){
-      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.updateCategorySeries(entity as CategorySeries));
+    else if(entity is CategorySeries){
+      return await _db.categorySeriesDao.insertCategorySeries(entity);
     }
   }
 
-  deleteById<T>(int entityId) async{
+  static update<T>(T entity) async{
+    if(entity is Series){
+      await _db.seriesDao.updateSeries(entity);
+    }
+    else if(entity is Category) {
+      await _db.categoryDao.updateCategory(entity);
+    }
+    else if(entity is CategorySeries){
+      await _db.categorySeriesDao.updateCategorySeries(entity);
+    }
+  }
+
+  static deleteById<T>(int entityId) async{
     if(T == Series){
-      await _dbSeries.then((value) => value.seriesDao).then((value) => value.deleteSeries(entityId));
+      await _db.seriesDao.deleteSeries(entityId);
     }
     else if(T == Category) {
-      await _dbCategory.then((value) => value.categoryDao).then((value) => value.deleteCategory(entityId));
+      await _db.categoryDao.deleteCategory(entityId);
     }
     else if(T == CategorySeries){
-      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteCategorySeries(entityId));
+      await _db.categorySeriesDao.deleteCategorySeries(entityId);
     }
   }
-  deleteAll<T>() async{
+
+  static deleteAll<T>() async{
     if(T == Series){
-      await _dbSeries.then((value) => value.seriesDao).then((value) => value.deleteAllSeries());
+      await _db.seriesDao.deleteAllSeries();
     }
     else if(T == Category) {
-      await _dbCategory.then((value) => value.categoryDao).then((value) => value.deleteAllCategories());
+      await _db.categoryDao.deleteAllCategories();
     }
     else if(T == CategorySeries){
-      await _dbCategorySeries.then((value) => value.categorySeriesDao).then((value) => value.deleteAllCategorySeries());
+      await _db.categorySeriesDao.deleteAllCategorySeries();
     }
   }
-  getSeriesFromCategory(int categoryId) async {
-    List<CategorySeries> allCategories = await this.getAll<CategorySeries>();
-    var currentCategoryFromId = allCategories.where((element) => element.categoryId == categoryId);
-    var i = currentCategoryFromId.map((element) => this.findById<Series>(element.seriesId));
-    return i;
+
+  static getSeriesFromCategory(int categoryId) async {
+    return _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
   }
+
+  static getCategoryFromSeries(int seriesId) async {
+     return _db.categorySeriesDao.getCategoryFromSeriesId(seriesId);
+  }
+
+  static dispose() async => await _db.close();
 }

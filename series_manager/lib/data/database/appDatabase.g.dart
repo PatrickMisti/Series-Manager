@@ -84,11 +84,11 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER, `categoriesEnum` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `categoriesEnum` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER, `name` TEXT, `video` TEXT, `photo` BLOB, `episode` INTEGER, `season` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `video` TEXT, `seriePhoto` BLOB, `episode` INTEGER, `season` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -152,8 +152,8 @@ class _$CategoryDao extends CategoryDao {
   }
 
   @override
-  Future<List<Category>> getCategoryById(int id) async {
-    return _queryAdapter.queryList('Select * from Category where id == ?',
+  Future<Category> getCategoryById(int id) async {
+    return _queryAdapter.query('Select * from Category where id == ?',
         arguments: <dynamic>[id], mapper: _categoryMapper);
   }
 
@@ -190,7 +190,7 @@ class _$SeriesDao extends SeriesDao {
                   'id': item.id,
                   'name': item.name,
                   'video': item.video,
-                  'photo': item.photo,
+                  'seriePhoto': item.seriePhoto,
                   'episode': item.episode,
                   'season': item.season
                 }),
@@ -202,7 +202,7 @@ class _$SeriesDao extends SeriesDao {
                   'id': item.id,
                   'name': item.name,
                   'video': item.video,
-                  'photo': item.photo,
+                  'seriePhoto': item.seriePhoto,
                   'episode': item.episode,
                   'season': item.season
                 });
@@ -217,7 +217,7 @@ class _$SeriesDao extends SeriesDao {
       row['id'] as int,
       row['name'] as String,
       row['video'] as String,
-      row['photo'] as Uint8List,
+      row['seriePhoto'] as Uint8List,
       row['episode'] as int,
       row['season'] as int);
 
@@ -232,8 +232,8 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
-  Future<List<Series>> getSeriesById(int id) async {
-    return _queryAdapter.queryList('Select * from Series where id = ?',
+  Future<Series> getSeriesById(int id) async {
+    return _queryAdapter.query('Select * from Series where id = ?',
         arguments: <dynamic>[id], mapper: _seriesMapper);
   }
 
@@ -302,9 +302,25 @@ class _$CategorySeriesDao extends CategorySeriesDao {
   }
 
   @override
-  Future<List<CategorySeries>> getCategorySeriesById(int id) async {
-    return _queryAdapter.queryList('Select * from CategorySeries where id = ?',
+  Future<CategorySeries> getCategorySeriesById(int id) async {
+    return _queryAdapter.query('Select * from CategorySeries where id = ?',
         arguments: <dynamic>[id], mapper: _categoryseriesMapper);
+  }
+
+  @override
+  Future<List<CategorySeries>> getCategoryFromSeriesId(int seriesId) async {
+    return _queryAdapter.queryList(
+        'Select * from CategorySeries where series_Id = ?',
+        arguments: <dynamic>[seriesId],
+        mapper: _categoryseriesMapper);
+  }
+
+  @override
+  Future<List<CategorySeries>> getSeriesFromCategoryId(int categoryId) async {
+    return _queryAdapter.queryList(
+        'Select * from CategorySeries where category_Id = ?',
+        arguments: <dynamic>[categoryId],
+        mapper: _categoryseriesMapper);
   }
 
   @override

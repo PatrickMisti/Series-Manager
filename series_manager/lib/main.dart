@@ -3,6 +3,7 @@ import 'package:series_manager/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+//todo await Database.init();
 void main() => runApp(Home());
 final primaryColor = Colors.teal;
 

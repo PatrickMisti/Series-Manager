@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:network_image_to_byte/network_image_to_byte.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
@@ -7,11 +8,6 @@ import 'package:series_manager/data/entities/category.dart';
 import 'package:series_manager/data/entities/serie.dart';
 
 class HttpService{
-  DataBaseExtension db;
-
-  HttpService() {
-    db = new DataBaseExtension();
-  }
 
   Future<String> _httpClient(uri) async =>
       await http.get(Uri.parse(uri),headers: {"Content-type": "application/xml", "Accept": "application/xml"})
@@ -25,19 +21,19 @@ class HttpService{
     var header = await _getImageAndTitle(result,url);
     var series = Series.fetching(
       name: header["title"],
-      photo: header["image"],
+      seriePhoto: header["image"],
       episode: 1,
       season: 1,
       video: url
     );
-    var episodeId = db.insert<Series>(series);
+    int episodeId = await DataBaseExtension.insert<Series>(series);
     var categories = await _getCategoryFromSeries(result);
     await _saveCategorySeries(episodeId, categories);
   }
 
   Future<void> _saveCategorySeries(int episodeId, List<Category> categories) async{
     for(var item in categories) {
-      await db.insert<CategorySeries>(
+      await DataBaseExtension.insert(
           new CategorySeries.fetching(
             seriesId: episodeId,
             categoryId: item.id
@@ -55,7 +51,7 @@ class HttpService{
         categoryEnum: element.nodes[0].text
       ));
     });
-    var savedCategories = await db.getAll<Category>();
+    var savedCategories = await DataBaseExtension.getAll<Category>();
     categories.forEach((element) async{
       var boolean = false;
       var index;
@@ -63,7 +59,7 @@ class HttpService{
         boolean = item.categoryEnum == element.categoryEnum ? true : false;
         index = boolean == true ? item.id: null;
       }
-      element.id = boolean == false ? await db.insert<Category>(element) : index;
+      element.id = boolean == false ? await DataBaseExtension.insert(element) : index;
     });
     return categories;
   }
@@ -74,8 +70,8 @@ class HttpService{
     var imageUri = html.querySelector("div.seriesCoverBox").nodes[0].attributes["data-src"]; //https://serienstream.sx/+ imageurl
     var basicUri = uri.split('/');
     var fullImageUri = basicUri[0].toString()+"//"+basicUri[2].toString()+imageUri.toString();
-    var image = await http.get(fullImageUri).then((value) => value.bodyBytes);
-    //var image = Image.network(fullImageUri);
+    var image = await networkImageToByte(fullImageUri);
+
     return ({
       "title" : title.toString(),
       "image" : image
