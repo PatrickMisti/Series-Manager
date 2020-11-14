@@ -1,15 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:series_manager/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 
-//todo await Database.init();
-void main() => runApp(Home());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DataBaseExtension.init();
+  //DataBaseExtension.deleteDB();
+  runApp(Home());
+}
+
 final primaryColor = Colors.teal;
 
 class Home extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       initialRoute: '/',
       routes: {

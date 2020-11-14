@@ -1,36 +1,49 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/main.dart';
 
-class SeriesComponent extends StatelessWidget{
-  SeriesComponent({Key key,@required this.series,@required this.size}):super(key:key);
+class SeriesComponent extends StatelessWidget {
+  SeriesComponent({@required this.series, @required this.size});
 
   final Size size;
-  final Series series;
+  final List<Series> series;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      width: 200,
-      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 40),
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        children: <Widget>[
-          Center(
-            child: Text(
-              series.id.toString(),
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black
-              ),
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: series.length,
+        itemBuilder: (_, int position) {
+          return Container(
+            height: 200,
+            width: 200,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: MemoryImage(series[position].seriePhoto),
+                  fit: BoxFit.fill),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
             ),
-          )
-        ],
-      ),
-    );
+            child: Column(
+              children: <Widget>[
+                Center(
+                  child: Text(series[position].name,
+                      style:
+                          GoogleFonts.alef(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          )
+                  ),
+                )
+              ],
+            ),
+          );
+        });
   }
 }

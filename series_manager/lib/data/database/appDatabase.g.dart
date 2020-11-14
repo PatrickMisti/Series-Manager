@@ -88,7 +88,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `video` TEXT, `seriePhoto` BLOB, `episode` INTEGER, `season` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER)');
 
         await callback?.onCreate?.call(database, version);
       },

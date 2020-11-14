@@ -24,7 +24,7 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
   double _bottomViewSize = 0.45;
   FocusNode _focusOnTextField = FocusNode();
   HttpService _service;
-
+  var bottomSheetKey = Key('container');
 
   @override
   void initState() {
@@ -35,19 +35,24 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
 
   _BottomSheetSetLink(this.size);
 
-  getLinkAndSave() {
+  getLinkAndSave() async{
     if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length >= 6) {
       var createLink = _linkInput.text
           .split('/')
           .sublist(0,6)
           .join('/');
       log(createLink);
-      _service.getDataSaveInDb(createLink);
+      bool exist = await _service.getDataSaveInDb(createLink);
+      if (exist == true)
+        doAlert();
     }
   }
 
+  doAlert(){
+    print("Exist");
+  }
+
   showBottomSheetForm(context) {
-    var bottomSheetKey = Key('container');
     return Container(
       key: bottomSheetKey,
       height: 20,
@@ -121,8 +126,8 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
                     height: 50,
                     onPressed: () {
                       getLinkAndSave();
-                      Navigator.pop(content);
                       _linkInput.text = '';
+                      Navigator.pop(content);
                     },
                     color: Colors.white,
                     child: Text(

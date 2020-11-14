@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:series_manager/data/entities/serie.dart';
 import 'package:series_manager/main.dart';
 import 'package:series_manager/views/BottomSheetSetLink.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
 
-
 class Body extends StatefulWidget {
-
   @override
   _Body createState() => _Body();
 }
 
 class _Body extends State<Body> {
 
-  Container categoryListView(Category category, Size size) {
+  categoryListView(Category category, Size size)  {
+    Future getAllSeries = DataBaseExtension.getSeriesFromCategoryId(category.id);
     return Container(
       height: size.height * 0.35,
       child: Stack(
@@ -36,26 +36,24 @@ class _Body extends State<Body> {
             height: 250,
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Container(
-                    height: 200,
-                    width: size.width,
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: FutureBuilder(
-                      future: DataBaseExtension.getSeriesFromCategory(category.id),
-                      builder: (context, snapshot) {
-                        return snapshot.hasData
-                            ? ListView.builder(
-                                itemCount: snapshot.data.length,
-                                itemBuilder: (_, int position) {
-                                  return SeriesComponent(
-                                      series: snapshot.data[position],
-                                      size: size);
-                                })
-                            : Center(
-                                child: Text("No Data send Patrick mail"),
-                              );
-                      },
-                    ))),
+                child: FutureBuilder(
+                  future: getAllSeries,
+                  builder: (context, snapshot) {
+                    if(snapshot.hasData) {
+                      return Container(
+                          height: 200,
+                          width: size.width,
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: SeriesComponent(series: snapshot.data as List<Series>,size: size)
+                      );
+                    } else {
+                      return Container(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                  }
+                ),
+            ),
           ),
         ],
       ),
@@ -66,11 +64,11 @@ class _Body extends State<Body> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Stack(
-      children: [
+      children: <Widget>[
         SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            children: <Widget>[
+            children: [
               Container(
                 padding: EdgeInsets.symmetric(vertical: 0),
               ),

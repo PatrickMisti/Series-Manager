@@ -1,97 +1,107 @@
-import 'package:flutter/material.dart';
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/entities/cat-ser.dart';
 import 'package:series_manager/data/entities/category.dart';
 
 import 'package:series_manager/data/entities/serie.dart';
 
-class DataBaseExtension{
+class DataBaseExtension {
   static AppDatabase _db;
 
-   static init() async {
-     _db = await $FloorAppDatabase.databaseBuilder('manager.db').build();
-     //_db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build(); // for testing
+  static init() async {
+    _db = await $FloorAppDatabase.databaseBuilder('manager.db').build();
+    //_db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build(); // for testing
   }
 
-  static getAll<T>() async{
-    if(T == Series){
+  static Future<List> getAll<T>() async {
+    if (T == Series) {
       return await _db.seriesDao.findAllSeries();
-    }
-    else if(T == Category){
+    } else if (T == Category) {
       return await _db.categoryDao.findAllCategories();
-    }
-    else if(T == CategorySeries){
+    } else if (T == CategorySeries) {
       return await _db.categorySeriesDao.findAllCategorySeries();
     }
+    return null;
   }
 
-  static findById<T>(int entityId) async{
-    if(T == Series){
+  static Future findById<T>(int entityId) async {
+    if (T == Series) {
       return await _db.seriesDao.getSeriesById(entityId);
-    }
-    else if(T == Category) {
+    } else if (T == Category) {
       return await _db.categoryDao.getCategoryById(entityId);
-    }
-    else if(T == CategorySeries){
+    } else if (T == CategorySeries) {
       return await _db.categorySeriesDao.getCategorySeriesById(entityId);
     }
   }
 
-  static insert<T>(T entity) async{
-    if(entity is Series){
+  static Future<int> insert<T>(T entity) async {
+    if (entity is Series) {
       return await _db.seriesDao.insertSeries(entity);
-    }
-    else if(entity is Category) {
+    } else if (entity is Category) {
       return await _db.categoryDao.insertCategory(entity);
-    }
-    else if(entity is CategorySeries){
+    } else if (entity is CategorySeries) {
       return await _db.categorySeriesDao.insertCategorySeries(entity);
+    }else{
+      return null;
     }
   }
 
-  static update<T>(T entity) async{
-    if(entity is Series){
+  static Future update<T>(T entity) async {
+    if (entity is Series) {
       await _db.seriesDao.updateSeries(entity);
-    }
-    else if(entity is Category) {
+    } else if (entity is Category) {
       await _db.categoryDao.updateCategory(entity);
-    }
-    else if(entity is CategorySeries){
+    } else if (entity is CategorySeries) {
       await _db.categorySeriesDao.updateCategorySeries(entity);
     }
   }
 
-  static deleteById<T>(int entityId) async{
-    if(T == Series){
+  static Future deleteById<T>(int entityId) async {
+    if (T == Series) {
       await _db.seriesDao.deleteSeries(entityId);
-    }
-    else if(T == Category) {
+    } else if (T == Category) {
       await _db.categoryDao.deleteCategory(entityId);
-    }
-    else if(T == CategorySeries){
+    } else if (T == CategorySeries) {
       await _db.categorySeriesDao.deleteCategorySeries(entityId);
     }
   }
 
-  static deleteAll<T>() async{
-    if(T == Series){
+  static Future deleteAll<T>() async {
+    if (T == Series) {
       await _db.seriesDao.deleteAllSeries();
-    }
-    else if(T == Category) {
+    } else if (T == Category) {
       await _db.categoryDao.deleteAllCategories();
-    }
-    else if(T == CategorySeries){
+    } else if (T == CategorySeries) {
       await _db.categorySeriesDao.deleteAllCategorySeries();
     }
   }
 
-  static getSeriesFromCategory(int categoryId) async {
-    return _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
+  static Future<List<Series>> getSeriesFromCategoryId(int categoryId) async {
+    var catser =
+        await _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
+    catser.toList();
+    List<Series> result = new List<Series>();
+    for (var item in catser) {
+      Series series = await _db.seriesDao.getSeriesById(item.id);
+      result.add(series);
+    }
+    return result;
   }
 
-  static getCategoryFromSeries(int seriesId) async {
-     return _db.categorySeriesDao.getCategoryFromSeriesId(seriesId);
+  static Future<List<CategorySeries>> getCategoryFromSeries(int seriesId) async {
+    return await _db.categorySeriesDao.getCategoryFromSeriesId(seriesId);
+  }
+
+  static Future saveCategoriesToSeries(
+      int episodeId, List<Category> categories) async {
+    categories.forEach((element) async => await insert<CategorySeries>(
+        new CategorySeries(null, element.id, episodeId)));
   }
 
   static dispose() async => await _db.close();
+
+  static deleteDB() {
+    _db.database.delete('series');
+    _db.database.delete('category');
+    _db.database.delete('categoryseries');
+  }
 }
