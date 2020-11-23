@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/data/entities/serie.dart';
-import 'package:series_manager/main.dart';
 
 class SeriesComponent extends StatelessWidget {
   SeriesComponent({@required this.series, @required this.size});

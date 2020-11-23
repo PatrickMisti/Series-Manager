@@ -3,19 +3,21 @@ import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/import/http-service.dart';
 import 'package:test/test.dart';
 
-void main(){
+void main() {
   group('Test db', () {
-    var urlPic = "https://serienstream.sx/public/img/cover/fairy-tail-stream-cover-uMVyjPu92Y0yioJMyTe0Y4P4WAm28x64_220x330.jpg";
-    setUp(() async{
+    var urlPic =
+        "https://serienstream.sx/public/img/cover/fairy-tail-stream-cover-uMVyjPu92Y0yioJMyTe0Y4P4WAm28x64_220x330.jpg";
+    setUp(() async {
       await DataBaseExtension.init();
     });
-    tearDown(() async{
+    tearDown(() async {
       await DataBaseExtension.dispose();
     });
-    test('db is not null', () async{
-      Category category = new Category(null,"Action");
+    test('db is not null', () async {
+      Category category = new Category(null, "Action");
       await DataBaseExtension.insert(category);
       List<Category> c = await DataBaseExtension.getAll<Category>();
       Category cs = c.first;
@@ -23,7 +25,7 @@ void main(){
       expect("Action", cs.categoryEnum);
       print(cs.categoryEnum);
     });
-    test('test photo in db UInt8list', () async{
+    test('test photo in db UInt8list', () async {
       var pic = await networkImageToByte(urlPic);
       Series s = new Series(null, "Fairy tail", "https://", pic, 1, 1);
       await DataBaseExtension.insert(s);
@@ -35,26 +37,22 @@ void main(){
       expect(pic, series.seriePhoto);
       print(series.name);
     });
-
   });
+
+
   group('test db without extension', () {
     var db;
     setUp(() async {
       db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build();
     });
 
-    test('test without await', (){
-      Category c = new Category(null, "Action");
-      int i = db.categoryDao.insertCategory(c);
-      Category d = db;
-    });
     test('test db', () async {
       Category c = new Category(null, "Action");
       int i = await db.categoryDao.insertCategory(c);
       List<Category> s = await db.categoryDao.findAllCategories();
-      //Future.delayed(Duration(seconds: 1));
+      Future.delayed(Duration(seconds: 1));
       //expect(!null, s);
-      print("insert "+i.toString());
+      print("insert " + i.toString());
       expect(1, i);
       expect(1, s.length);
       var x = s.first;
@@ -64,22 +62,54 @@ void main(){
 
     test('test list ', () {
       var s = [
-        {
-          "t": 1,
-          "y": "Hallo"
-        },
-        {
-          "t": 2,
-          "y": "ollah"
-        }
+        {"t": 1, "y": "Hallo"},
+        {"t": 2, "y": "ollah"}
       ];
-      List<Category> c = List.of(s.map((e) => new Category(e["t"], e["y"].toString())));
+      List<Category> c =
+          List.of(s.map((e) => new Category(e["t"], e["y"].toString())));
       expect(2, c.length);
-      c.forEach((element) => print("Id: ${element.id.toString()}\nCategory: ${element.categoryEnum}"));
+      c.forEach((element) => print(
+          "Id: ${element.id.toString()}\nCategory: ${element.categoryEnum}"));
 
       c.forEach((element) => element.id = 10);
-      c.forEach((element) => print("Id: ${element.id.toString()}\nCategory: ${element.categoryEnum}"));
+      c.forEach((element) => print(
+          "Id: ${element.id.toString()}\nCategory: ${element.categoryEnum}"));
+    });
+  });
+  group('find two times the same id', () {
+    String url =
+        'https://serienstream.sx/serie/stream/the-walking-dead';
+    setUp(() async {
+      //await DataBaseExtension.deleteDB();
+      await DataBaseExtension.init();
     });
 
+    test('db', () async {
+      HttpService sv = new HttpService();
+      bool i = await sv.getDataSaveInDb(url);
+      expect(true, i);
+
+      List<Category> category = await DataBaseExtension.getAll<Category>();
+      category.forEach((element) => print("ListCategory: ${element.categoryEnum} \n"));
+      expect(1, category.length);
+
+      List<Series> series = await DataBaseExtension.getAll<Series>();
+      series.forEach((element) => print("Series: ${element.name} \n"));
+      expect(1, series.length);
+
+      Category c = category.first;
+      print("Category length c first: ${c.categoryEnum} \n\n");
+
+      List<Series> seriesByCategoryId = await DataBaseExtension.getSeriesFromCategoryId(c.id);
+      Future.delayed(Duration(seconds: 5));
+      print("SeriesByCategoryId: ${seriesByCategoryId.length.toString()}\nSecond try");
+      expect(1, seriesByCategoryId.length);
+
+      seriesByCategoryId = await DataBaseExtension.getSeriesFromCategoryId(c.id);
+      expect(1, seriesByCategoryId.length);
+    });
+  });
+  tearDownAll(() async {
+    await DataBaseExtension.dispose();
   });
 }

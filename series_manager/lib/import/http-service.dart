@@ -21,11 +21,13 @@ class HttpService {
   Future<bool> getDataSaveInDb(String url) async {
     List<Series> allSeries = await DataBaseExtension.getAll<Series>();
     bool exist = false;
+
     allSeries.forEach((element) {
       if (element.video.compareTo(url) == 0 && exist == false) {
         exist = true;
       }
     });
+
     if (!exist) {
       var result = await _httpClient(url);
       var header = await _htmlGetImageAndTitle(result, url);

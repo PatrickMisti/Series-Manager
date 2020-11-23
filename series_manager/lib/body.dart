@@ -15,9 +15,12 @@ class Body extends StatefulWidget {
 }
 
 class _Body extends State<Body> {
+  Future<List<Series>> setSeriesListFromCatSerId(int categoryId) async {
+    return await DataBaseExtension.getSeriesFromCategoryId(categoryId);
+  }
 
-  categoryListView(Category category, Size size)  {
-    Future getAllSeries = DataBaseExtension.getSeriesFromCategoryId(category.id);
+  categoryListView(Category category, Size size) {
+    var settings = setSeriesListFromCatSerId(category.id);
     return Container(
       height: size.height * 0.35,
       child: Stack(
@@ -35,30 +38,32 @@ class _Body extends State<Body> {
             top: 10,
             height: 250,
             child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: FutureBuilder(
-                  future: getAllSeries,
+              scrollDirection: Axis.horizontal,
+              child: FutureBuilder(
+                  future: settings,
                   builder: (context, snapshot) {
-                    if(snapshot.hasData) {
+                    if (snapshot.hasData) {
+                      List<Series> series = snapshot.data;
                       return Container(
-                          height: 200,
-                          width: size.width,
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: SeriesComponent(series: snapshot.data as List<Series>,size: size)
+                        height: 200,
+                        width: size.width,
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: SeriesComponent(
+                            series: series, size: size),
                       );
                     } else {
                       return Container(
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-                  }
-                ),
+                  }),
             ),
           ),
         ],
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

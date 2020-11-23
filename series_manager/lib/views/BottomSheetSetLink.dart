@@ -36,16 +36,17 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
   _BottomSheetSetLink(this.size);
 
   getLinkAndSave() async{
+    bool exist = true;
     if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length >= 6) {
       var createLink = _linkInput.text
           .split('/')
           .sublist(0,6)
           .join('/');
       log(createLink);
-      bool exist = await _service.getDataSaveInDb(createLink);
-      if (exist == true)
-        doAlert();
+      exist = await _service.getDataSaveInDb(createLink);
     }
+    if (exist == true)
+      doAlert();
   }
 
   doAlert(){

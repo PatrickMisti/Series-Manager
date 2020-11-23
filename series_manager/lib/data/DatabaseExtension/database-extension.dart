@@ -1,7 +1,6 @@
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/entities/cat-ser.dart';
 import 'package:series_manager/data/entities/category.dart';
-
 import 'package:series_manager/data/entities/serie.dart';
 
 class DataBaseExtension {
@@ -23,7 +22,7 @@ class DataBaseExtension {
     return null;
   }
 
-  static Future findById<T>(int entityId) async {
+  static Future<dynamic> findById<T>(int entityId) async {
     if (T == Series) {
       return await _db.seriesDao.getSeriesById(entityId);
     } else if (T == Category) {
@@ -76,12 +75,10 @@ class DataBaseExtension {
   }
 
   static Future<List<Series>> getSeriesFromCategoryId(int categoryId) async {
-    var catser =
-        await _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
-    catser.toList();
+    List<CategorySeries> raw = await _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
     List<Series> result = new List<Series>();
-    for (var item in catser) {
-      Series series = await _db.seriesDao.getSeriesById(item.id);
+    for(CategorySeries element in raw) {
+      Series series = await _db.seriesDao.getSeriesById(element.seriesId);
       result.add(series);
     }
     return result;
