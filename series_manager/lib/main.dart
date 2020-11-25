@@ -4,6 +4,7 @@ import 'package:series_manager/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
+import 'package:series_manager/views/AlertDialogForNotification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,7 @@ class Home extends StatelessWidget{
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/' : (context) => Scaffold(
+        '/': (context) => Scaffold(
           backgroundColor: Colors.black,
           appBar: buildAppBar(),
           body: Body(),

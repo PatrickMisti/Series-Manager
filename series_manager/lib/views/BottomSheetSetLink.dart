@@ -7,12 +7,15 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
+import 'package:series_manager/views/AlertDialogForNotification.dart';
 
 
 class BottomSheetSetLink extends StatefulWidget {
   final Size size;
+  final toSaveData;
+  BottomSheetSetLink(this.size,{this.toSaveData});
 
-  BottomSheetSetLink(this.size);
+
 
   @override
   _BottomSheetSetLink createState() => _BottomSheetSetLink(this.size);
@@ -23,34 +26,25 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
   final _linkInput = TextEditingController();
   double _bottomViewSize = 0.45;
   FocusNode _focusOnTextField = FocusNode();
-  HttpService _service;
   var bottomSheetKey = Key('container');
 
   @override
   void initState() {
     super.initState();
-    _service = new HttpService();
     _focusOnTextField.addListener(() => _bottomViewSize = _focusOnTextField.hasFocus ? 0.85 : 0.45);
   }
 
   _BottomSheetSetLink(this.size);
 
   getLinkAndSave() async{
-    bool exist = true;
     if(_linkInput.text.isNotEmpty && _linkInput.text.length > 22 && _linkInput.text.split('/').length >= 6) {
       var createLink = _linkInput.text
           .split('/')
           .sublist(0,6)
           .join('/');
       log(createLink);
-      exist = await _service.getDataSaveInDb(createLink);
+      widget.toSaveData(createLink);
     }
-    if (exist == true)
-      doAlert();
-  }
-
-  doAlert(){
-    print("Exist");
   }
 
   showBottomSheetForm(context) {
@@ -129,6 +123,7 @@ class _BottomSheetSetLink extends State<BottomSheetSetLink> with SingleTickerPro
                       getLinkAndSave();
                       _linkInput.text = '';
                       Navigator.pop(content);
+                      AlertDialogForNotification.showDialogAlert(content,AlertDialogForNotification.activeDialog);
                     },
                     color: Colors.white,
                     child: Text(

@@ -5,7 +5,9 @@ import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
+import 'package:series_manager/views/AlertDialogForNotification.dart';
 import 'package:series_manager/views/BottomSheetSetLink.dart';
 import 'package:series_manager/views/SeriesComponent.dart';
 
@@ -15,10 +17,25 @@ class Body extends StatefulWidget {
 }
 
 class _Body extends State<Body> {
+  HttpService _service;
+
+  @override
+  void initState() {
+    super.initState();
+    _service = new HttpService();
+  }
+
+  saveUrlToDatabase(String url) async {
+    if (!await _service.getDataSaveInDb(url))
+      setState((){});
+    else
+      AlertDialogForNotification.activeDialog = true;
+  }
+
   Future<List<Series>> setSeriesListFromCatSerId(int categoryId) async {
     return await DataBaseExtension.getSeriesFromCategoryId(categoryId);
   }
-
+  
   categoryListView(Category category, Size size) {
     var settings = setSeriesListFromCatSerId(category.id);
     return Container(
@@ -111,7 +128,7 @@ class _Body extends State<Body> {
             ],
           ),
         ),
-        BottomSheetSetLink(size),
+        BottomSheetSetLink(size,toSaveData: saveUrlToDatabase,),
       ],
     );
   }
