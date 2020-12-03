@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:html/dom.dart';
 import 'package:network_image_to_byte/network_image_to_byte.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +8,7 @@ import 'package:series_manager/data/entities/category.dart';
 import 'package:series_manager/data/entities/serie.dart';
 
 class HttpService {
-  Future<String> _httpClient(uri) async => await http
+  static Future<String> httpClient(uri) async => await http
       .get(Uri.parse(uri), headers: {
         "Content-type": "application/xml",
         "Accept": "application/xml"
@@ -15,10 +16,8 @@ class HttpService {
       .then((value) => value.body)
       .then((value) => value.replaceAll("\r\n", '').replaceAll("\n", ''));
 
-  Future<List<Map>> getEpisodeAndSeasonFromUrl(String url) async =>
-      await _htmlGetEpisodeAndSeason(await _httpResponseConvert(url, 0), url);
 
-  Future<bool> getDataSaveInDb(String url) async {
+  static Future<bool> getDataSaveInDb(String url) async {
     List<Series> allSeries = await DataBaseExtension.getAll<Series>();
     bool exist = false;
 
@@ -29,7 +28,7 @@ class HttpService {
     });
 
     if (!exist) {
-      var result = await _httpClient(url);
+      var result = await HttpService.httpClient(url);
       var header = await _htmlGetImageAndTitle(result, url);
       List<Category> category = await _htmlGetCategoryFromSeries(result);
       var series = Series.fetching(
@@ -44,7 +43,7 @@ class HttpService {
     return exist;
   }
 
-  Future<List<Category>> _htmlGetCategoryFromSeries(String result) async {
+  static Future<List<Category>> _htmlGetCategoryFromSeries(String result) async {
     var html = parse(result);
     var genre = html.querySelector('div.genres').getElementsByTagName('a');
 
@@ -71,7 +70,7 @@ class HttpService {
     return categories;
   }
 
-  Future<Map> _htmlGetImageAndTitle(String response, String uri) async {
+  static Future<Map> _htmlGetImageAndTitle(String response, String uri) async {
     var html = parse(response);
     var title = html
         .querySelector("h1[title]")
@@ -90,41 +89,5 @@ class HttpService {
     var image = await networkImageToByte(fullImageUri);
 
     return ({"title": title.toString(), "image": image});
-  }
-
-  Future<List<LinkedHashMap<dynamic, String>>> _httpResponseConvert(
-      uri, int index) async {
-    var response = await _httpClient(uri);
-    var html = parse(response);
-    var body = html.getElementById('stream');
-    var links = body.getElementsByTagName('ul');
-    var item = links[index]
-        .getElementsByTagName('a')
-        .map((element) => element.attributes)
-        .toList();
-    item.forEach(
-        (element) => element.removeWhere((key, value) => key == "class"));
-    return item;
-  }
-
-  Future<List<Map>> _htmlGetEpisodeAndSeason(
-      List<LinkedHashMap<dynamic, String>> result, uri) async {
-    List episodeAndSeason = new List<Map>();
-    for (var item in result) {
-      var element = await _httpResponseConvert(
-          uri + item["href"].toString().split('/').last, 1);
-      List<Map> resultEpisode = new List<Map>();
-      for (var episode in element) {
-        Map map = ({
-          "episode": episode["title"].toString(),
-          "link": episode["href"].toString()
-        });
-        resultEpisode.add(map);
-      }
-      var resultRaw =
-          Map.of({"season": item["title"], "episode": resultEpisode});
-      episodeAndSeason.add(resultRaw);
-    }
-    return episodeAndSeason;
   }
 }

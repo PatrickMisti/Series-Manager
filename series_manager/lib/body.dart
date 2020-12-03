@@ -17,16 +17,14 @@ class Body extends StatefulWidget {
 }
 
 class _Body extends State<Body> {
-  HttpService _service;
 
   @override
   void initState() {
     super.initState();
-    _service = new HttpService();
   }
 
   saveUrlToDatabase(String url) async {
-    if (!await _service.getDataSaveInDb(url))
+    if (!await HttpService.getDataSaveInDb(url))
       setState((){});
     else
       AlertDialogForNotification.activeDialog = true;

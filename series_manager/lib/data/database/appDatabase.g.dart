@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `categoriesEnum` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `video` TEXT, `seriePhoto` BLOB, `episode` INTEGER, `season` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `video` TEXT, `seriePhoto` BLOB, `episode` INTEGER, `season` INTEGER, `movie` INTEGER)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER)');
 
@@ -192,7 +192,8 @@ class _$SeriesDao extends SeriesDao {
                   'video': item.video,
                   'seriePhoto': item.seriePhoto,
                   'episode': item.episode,
-                  'season': item.season
+                  'season': item.season,
+                  'movie': item.movie
                 }),
         _seriesUpdateAdapter = UpdateAdapter(
             database,
@@ -204,7 +205,8 @@ class _$SeriesDao extends SeriesDao {
                   'video': item.video,
                   'seriePhoto': item.seriePhoto,
                   'episode': item.episode,
-                  'season': item.season
+                  'season': item.season,
+                  'movie': item.movie
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -219,7 +221,8 @@ class _$SeriesDao extends SeriesDao {
       row['video'] as String,
       row['seriePhoto'] as Uint8List,
       row['episode'] as int,
-      row['season'] as int);
+      row['season'] as int,
+      row['movie'] as int);
 
   final InsertionAdapter<Series> _seriesInsertionAdapter;
 

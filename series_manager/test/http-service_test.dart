@@ -27,7 +27,7 @@ void main() {
     });
     test('test photo in db UInt8list', () async {
       var pic = await networkImageToByte(urlPic);
-      Series s = new Series(null, "Fairy tail", "https://", pic, 1, 1);
+      Series s = new Series(null, "Fairy tail", "https://", pic, 1, 1,0);
       await DataBaseExtension.insert(s);
       Future.delayed(Duration(seconds: 1));
       List<Series> list = await DataBaseExtension.getAll<Series>();
@@ -107,6 +107,24 @@ void main() {
 
       seriesByCategoryId = await DataBaseExtension.getSeriesFromCategoryId(c.id);
       expect(1, seriesByCategoryId.length);
+    });
+  });
+  group('Get all Links',() {
+    test('all links from serienstream',() async {
+      String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
+      //List<Map> all = await HttpService.getEpisodeAndSeasonFromUrl(url);
+      Future.delayed(Duration(seconds: 2));
+      expect(11, all.length);
+    });
+  });
+  group('hostersite', (){
+    test('links from hoster',() async {
+      HttpService sv = new HttpService();
+      String url = 'https://serienstream.sx/serie/stream/the-walking-dead/staffel-10/episode-11';
+      //var x = await sv.getHosterFromUrl(url);
+      Future.delayed(Duration(seconds: 1));
+      //expect(!null, x);
+
     });
   });
   tearDownAll(() async {

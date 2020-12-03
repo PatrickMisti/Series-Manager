@@ -1,10 +1,11 @@
+import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:series_manager/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
-import 'package:series_manager/views/AlertDialogForNotification.dart';
+import 'package:series_manager/detail.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,17 +20,31 @@ class Home extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Scaffold(
-          backgroundColor: Colors.black,
-          appBar: buildAppBar(),
-          body: Body(),
+    return BackGestureWidthTheme(
+      backGestureWidth: BackGestureWidth.fraction(1/2),
+      child: MaterialApp(
+        theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
+            },
+          ),
         ),
-      },
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Scaffold(
+            backgroundColor: Colors.black,
+            appBar: buildAppBar(),
+            body: Body(),
+          ),
+          '/detail' : (context) => Detail(),
+        },
+      ),
     );
   }
+/*;*/
+
   AppBar buildAppBar(){
     return AppBar(
       toolbarHeight: 60,
