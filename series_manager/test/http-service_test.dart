@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:network_image_to_byte/network_image_to_byte.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/database/appDatabase.dart';
 import 'package:series_manager/data/entities/category.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/import/SerienManager.dart';
 import 'package:series_manager/import/http-service.dart';
 import 'package:test/test.dart';
 
@@ -86,8 +89,8 @@ void main() {
 
     test('db', () async {
       HttpService sv = new HttpService();
-      bool i = await sv.getDataSaveInDb(url);
-      expect(true, i);
+      //bool i = await sv.getDataSaveInDb(url);
+      //expect(true, i);
 
       List<Category> category = await DataBaseExtension.getAll<Category>();
       category.forEach((element) => print("ListCategory: ${element.categoryEnum} \n"));
@@ -112,19 +115,45 @@ void main() {
   group('Get all Links',() {
     test('all links from serienstream',() async {
       String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
-      //List<Map> all = await HttpService.getEpisodeAndSeasonFromUrl(url);
+      SerienManager manager = new SerienManager(
+          new Series(null,"hallo","akdslf",new Uint8List(9383848),1,1,0));
+      await manager.getEpisodeAndSeasonFromUrl(url);
       Future.delayed(Duration(seconds: 2));
-      expect(11, all.length);
+      List<Map> all = manager.currentMovieList;
+      List<Map> series = manager.currentSeriesList;
+      print(all.length);
+      print(series.length);
+
+      expect(1, all.length);
+      expect(10,series.length);
     });
   });
-  group('hostersite', (){
-    test('links from hoster',() async {
-      HttpService sv = new HttpService();
-      String url = 'https://serienstream.sx/serie/stream/the-walking-dead/staffel-10/episode-11';
-      //var x = await sv.getHosterFromUrl(url);
-      Future.delayed(Duration(seconds: 1));
-      //expect(!null, x);
 
+  group('hostersite', (){
+    SerienManager manager;
+    String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
+
+    setUp(() async{
+      manager = new SerienManager(
+          new Series(null,"hallo","akdslf",new Uint8List(9383848),0,0,null));
+      await manager.getEpisodeAndSeasonFromUrl(url);
+      Future.delayed(Duration(seconds: 2));
+    });
+
+    test('links from hoster from last watching',() async {
+
+      var current = manager.currentEpisodeFromSeason();
+      print(current);
+      //expect('/serie/stream/the-walking-dead/filme/film-1',current["link"].toString());
+    });
+
+    test('links', () async{
+
+      //todo url + current
+      var current = manager.currentEpisodeFromSeason();
+      var links = await manager.getHosterFromUrl(current["link"].toString());
+      Future.delayed(Duration(seconds: 2));
+      expect(!null, links);
     });
   });
   tearDownAll(() async {

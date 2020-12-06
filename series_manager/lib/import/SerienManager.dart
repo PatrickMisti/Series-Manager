@@ -1,29 +1,36 @@
 import 'dart:collection';
 import 'package:html/parser.dart';
-
 import 'package:series_manager/data/entities/serie.dart';
 import 'package:series_manager/import/http-service.dart';
 
 class SerienManager {
-  List<Map> _season;
+  List<Map> _managerSeriesList;
+  List<Map> _managerMovieList;
   final Series _series;
+  String originalUrl; //todo urUrl + path for links
 
   SerienManager(this._series){
-    this._season = new List<Map>();
+    this._managerSeriesList = new List<Map>();
+    this._managerMovieList = new List<Map>();
   }
 
-  Future<List<Map>> getEpisodeAndSeasonFromUrl(String url) async =>
-      await _htmlGetEpisodeAndSeason(await _httpResponseConvert(url, 0), url);
+  Future<List<Map>> getEpisodeAndSeasonFromUrl([String url]) async {
+    var currentUrl = url == null ? _series.video : url;
+    await _htmlGetEpisodeAndSeason(await _httpResponseConvert(currentUrl, 0), currentUrl);
+  }
 
-  currentSeasonAndEpisodeList() => this._season;
 
-  currentEpisodeFromSeason() {
-    if (_series.episode != 0 && _series.season != 0)
-      return this._season[_series.season]["episode"][_series.episode];
-    if (_series.movie != 0)
-      return null; //todo ["Movie"]
+  List<Map> get currentSeriesList => this._managerSeriesList;
+
+  List<Map> get currentMovieList => this._managerMovieList;
+
+  Map currentEpisodeFromSeason() {
+    if (_series.episode != null && _series.season != null)
+      return this._managerSeriesList[_series.season]["episode"][_series.episode];
+    if (_series.movie != null)
+      return this._managerMovieList[0]["episode"][_series.movie];
     else
-      return this._season[0]["episode"][0];
+      return this._managerSeriesList[0]["episode"][0];
   }
 
   Future<List<Map>> getHosterFromUrl(String url) async {
@@ -64,15 +71,23 @@ class SerienManager {
       List<Map> resultEpisode = new List<Map>();
       for (var episode in element) {
         Map map = ({
-          "episode": episode["title"].toString(),
+          "episodeName": episode["title"].toString(),
           "link": episode["href"].toString()
         });
         resultEpisode.add(map);
       }
       var resultRaw =
-      Map.of({"season": item["title"], "episode": resultEpisode});
+      Map.of({"series": item["title"], "episode": resultEpisode});
       episodeAndSeason.add(resultRaw);
     }
-    this._season = episodeAndSeason;
+    setLists(episodeAndSeason);
+  }
+
+  void setLists(List<Map> episodeAndSeason){
+    episodeAndSeason.forEach((element) {
+      element["series"].compareTo("Alle Filme") == 0
+      ? this._managerMovieList.add(element)
+      : this._managerSeriesList.add(element);
+    });
   }
 }

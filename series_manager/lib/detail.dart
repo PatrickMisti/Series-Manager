@@ -55,7 +55,7 @@ class _Detail extends State<Detail> {
                 onSelectedItemChanged: (value){
                   setState(() {
                     selectedSeries = seasonOrEpisode[value];
-                    hostingFunction = sv.getHosterFromUrl(selectedSeries['episode']);
+                    //hostingFunction = sv.getHosterFromUrl(selectedSeries['episode']);
                   });
                 },
                 children: generateListForPicker(seasonOrEpisode),
@@ -90,12 +90,12 @@ class _Detail extends State<Detail> {
     );
   }
   setSelectMap(Series open) async{
-    List<Map> getSeasonAndEpisode = await sv.getEpisodeAndSeasonFromUrl(open.video);
+    //List<Map> getSeasonAndEpisode = await sv.getEpisodeAndSeasonFromUrl(open.video);
     int count = open.season;
-    if(getSeasonAndEpisode["season"].containsValue("Alle Filme")){
+    /*if(getSeasonAndEpisode["season"].containsValue("Alle Filme")){
       count++;
     }
-    selectedSeries = getSeasonAndEpisode[count][open.episode];
+    selectedSeries = getSeasonAndEpisode[count][open.episode];*/
   }
 
   @override
@@ -132,10 +132,10 @@ class _Detail extends State<Detail> {
                     width: size.width,
                     margin: EdgeInsets.only(top: 10),
                     child: FutureBuilder(
-                      future: sv.getEpisodeAndSeasonFromUrl(currentSeries.video),
-                      builder: (context, snapshot){
-                        return showButtonStyle(currentSeries, snapshot);
-                      },
+                      //future: //sv.getEpisodeAndSeasonFromUrl(currentSeries.video),
+                      //builder: (context, snapshot){
+                        //return showButtonStyle(currentSeries, snapshot);
+                      //},
                     )
                   ),
                   Container(
