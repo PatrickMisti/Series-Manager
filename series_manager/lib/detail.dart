@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/import/SerienManager.dart';
 import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
 
@@ -21,13 +22,6 @@ class _Detail extends State<Detail> {
   void initState() {
     super.initState();
     sv = new HttpService();
-  }
-
-  List<Widget> generateListForPicker(List<Map> raw){
-    List<Map> result = new List<Map>();
-    raw.forEach((element) => result.addAll(element["episode"]));
-    return List<Widget>.generate(result.length, 
-            (index) => new Text(result[index]["episode"]));
   }
 
   showHostLink(Map hostLinks){
@@ -55,23 +49,18 @@ class _Detail extends State<Detail> {
                 onSelectedItemChanged: (value){
                   setState(() {
                     selectedSeries = seasonOrEpisode[value];
-                    //hostingFunction = sv.getHosterFromUrl(selectedSeries['episode']);
                   });
                 },
-                children: generateListForPicker(seasonOrEpisode),
             ),
           );
         }
     );
   }
   
-  CupertinoButton showButtonStyle(Series current, AsyncSnapshot dropDownList) {
+  CupertinoButton showButtonStyle() {
     return CupertinoButton(
       onPressed: () => {
-        if(dropDownList.hasData) {
-          showCupertinoSeriesAndSeasonPicker(dropDownList.data)
 
-        }
       },
       child: Container(
           width: size.width,
@@ -82,27 +71,18 @@ class _Detail extends State<Detail> {
           ),
           child: Center(
             child: Text(
-              'Season ${current.season}   Episode ${current.episode}',
+              'Season',
               style: TextStyle(color: Colors.black, fontSize: 25),
             ),
           )
       ),
     );
   }
-  setSelectMap(Series open) async{
-    //List<Map> getSeasonAndEpisode = await sv.getEpisodeAndSeasonFromUrl(open.video);
-    int count = open.season;
-    /*if(getSeasonAndEpisode["season"].containsValue("Alle Filme")){
-      count++;
-    }
-    selectedSeries = getSeasonAndEpisode[count][open.episode];*/
-  }
 
   @override
   Widget build(BuildContext context) {
     this.size = MediaQuery.of(context).size;
-    final Series currentSeries = ModalRoute.of(context).settings.arguments;
-    setSelectMap(currentSeries);
+    final SerienManager currentSeries = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       backgroundColor: Colors.black,
       body: CustomScrollView(
@@ -115,11 +95,11 @@ class _Detail extends State<Detail> {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                currentSeries.name,
+                currentSeries.currentSeriesManager.name,
                 style: TextStyle(color: primaryColor, fontSize: 20),
               ),
               background: Image.memory(
-                currentSeries.seriePhoto,
+                currentSeries.currentSeriesManager.seriePhoto,
                 fit: BoxFit.fill,
               ),
             ),
@@ -131,34 +111,13 @@ class _Detail extends State<Detail> {
                   Container(
                     width: size.width,
                     margin: EdgeInsets.only(top: 10),
-                    child: FutureBuilder(
-                      //future: //sv.getEpisodeAndSeasonFromUrl(currentSeries.video),
-                      //builder: (context, snapshot){
-                        //return showButtonStyle(currentSeries, snapshot);
-                      //},
-                    )
+                    child: showButtonStyle()
                   ),
                   Container(
                     height: size.height,
                     child: Row(
                       children: [
-                        FutureBuilder(
-                          future: hostingFunction,
-                          builder: (content,snapshot){
-                            if(snapshot.hasData){
-                              return ListView.builder(
-                                  itemCount: 10,
-                                  itemBuilder: (BuildContext content, int position) {
-                                    return showHostLink(snapshot.data[position]);
-                                  });
-                            }
-                            else {
-                              return Container(
-                                child: Text("Data chosen"),
-                              );
-                            }
-                          },
-                        ),
+                        //todo hostlinks
                       ],
                     ),
                   ),

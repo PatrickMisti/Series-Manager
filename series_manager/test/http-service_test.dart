@@ -117,7 +117,7 @@ void main() {
       String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
       SerienManager manager = new SerienManager(
           new Series(null,"hallo","akdslf",new Uint8List(9383848),1,1,0));
-      await manager.getEpisodeAndSeasonFromUrl(url);
+      //await manager.getEpisodeAndSeasonFromUrl(url);
       Future.delayed(Duration(seconds: 2));
       List<Map> all = manager.currentMovieList;
       List<Map> series = manager.currentSeriesList;
@@ -134,9 +134,10 @@ void main() {
     String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
 
     setUp(() async{
+      print("setup");
       manager = new SerienManager(
-          new Series(null,"hallo","akdslf",new Uint8List(9383848),0,0,null));
-      await manager.getEpisodeAndSeasonFromUrl(url);
+          new Series(null,"Servus","https://serienstream.sx/",new Uint8List(9383848),0,0,null));
+      //await manager.getEpisodeAndSeasonFromUrl(url);
       Future.delayed(Duration(seconds: 2));
     });
 
@@ -149,12 +150,36 @@ void main() {
 
     test('links', () async{
 
+      print("links");
       //todo url + current
       var current = manager.currentEpisodeFromSeason();
       var links = await manager.getHosterFromUrl(current["link"].toString());
       Future.delayed(Duration(seconds: 2));
-      expect(!null, links);
+      expect(11, links.length);
     });
+
+  });
+
+  group("fill Serienmanager", (){
+    String url = 'https://serienstream.sx/serie/stream/the-walking-dead';
+
+    test("test manager", () async {
+      await DataBaseExtension.init();
+      await HttpService.getDataSaveInDb(url);
+      Future.delayed(Duration(seconds: 1));
+      var series = await DataBaseExtension.getAll<Series>();
+      Future.delayed(Duration(seconds: 1));
+      expect(1, series.length);
+      var firstOne = series.first;
+      SerienManager manager = new SerienManager(firstOne);
+      await manager.fillingManager();
+      Future.delayed(Duration(seconds: 1));
+      var current = manager.currentEpisodeFromSeason();
+      print("Current from manager " + current.toString());
+      var links = await manager.getHosterFromUrl();
+      expect(11, links.length);
+    });
+
   });
   tearDownAll(() async {
     await DataBaseExtension.dispose();

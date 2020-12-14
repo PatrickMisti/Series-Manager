@@ -1,5 +1,3 @@
-import 'dart:collection';
-import 'package:html/dom.dart';
 import 'package:network_image_to_byte/network_image_to_byte.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;

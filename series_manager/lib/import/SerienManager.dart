@@ -7,25 +7,42 @@ class SerienManager {
   List<Map> _managerSeriesList;
   List<Map> _managerMovieList;
   final Series _series;
-  String originalUrl; //todo urUrl + path for links
+  String _originalUrl;
 
   SerienManager(this._series){
     this._managerSeriesList = new List<Map>();
     this._managerMovieList = new List<Map>();
+    var oriUrlRaw = this._series.video.split('/');
+    this._originalUrl = oriUrlRaw[0] + "//" + oriUrlRaw[2];
   }
 
-  Future<List<Map>> getEpisodeAndSeasonFromUrl([String url]) async {
+  Future fillingManager() async {
+    await _getEpisodeAndSeasonFromUrl();
+  }
+
+  Future _getEpisodeAndSeasonFromUrl([String url]) async {
     var currentUrl = url == null ? _series.video : url;
     await _htmlGetEpisodeAndSeason(await _httpResponseConvert(currentUrl, 0), currentUrl);
   }
-
 
   List<Map> get currentSeriesList => this._managerSeriesList;
 
   List<Map> get currentMovieList => this._managerMovieList;
 
+  Series get currentSeriesManager => this._series;
+
+  List buttonListManager(){
+    List result = new List();
+    if(_managerMovieList.isNotEmpty)
+      result.add(_managerMovieList);
+    if(_managerSeriesList.isNotEmpty)
+      result.add(_managerSeriesList);
+
+    return result;
+  }
+
   Map currentEpisodeFromSeason() {
-    if (_series.episode != null && _series.season != null)
+    if ( _series.episode != null && _series.season != null)
       return this._managerSeriesList[_series.season]["episode"][_series.episode];
     if (_series.movie != null)
       return this._managerMovieList[0]["episode"][_series.movie];
@@ -33,8 +50,9 @@ class SerienManager {
       return this._managerSeriesList[0]["episode"][0];
   }
 
-  Future<List<Map>> getHosterFromUrl(String url) async {
-    var html = parse(await HttpService.httpClient(url));
+  Future<List<Map>> getHosterFromUrl([String url]) async {
+    url = url ?? currentEpisodeFromSeason()["link"].toString();
+    var html = parse(await HttpService.httpClient(_originalUrl + url));
     var hosterRaw = html.getElementsByClassName('hosterSiteVideo');
     //var languageRaw = hosterRaw[0].getElementsByClassName('changeLanguage'); // todo
     var hosterResult = hosterRaw[0].getElementsByClassName('row')[0].getElementsByTagName('a');
@@ -80,10 +98,10 @@ class SerienManager {
       Map.of({"series": item["title"], "episode": resultEpisode});
       episodeAndSeason.add(resultRaw);
     }
-    setLists(episodeAndSeason);
+    _setLists(episodeAndSeason);
   }
 
-  void setLists(List<Map> episodeAndSeason){
+  void _setLists(List<Map> episodeAndSeason){
     episodeAndSeason.forEach((element) {
       element["series"].compareTo("Alle Filme") == 0
       ? this._managerMovieList.add(element)
