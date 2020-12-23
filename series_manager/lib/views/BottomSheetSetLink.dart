@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:series_manager/import/http-service.dart';
 import 'package:series_manager/main.dart';
 import 'package:series_manager/views/AlertDialogForNotification.dart';
 

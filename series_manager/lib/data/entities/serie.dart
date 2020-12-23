@@ -9,9 +9,9 @@ class Series {
   final String name;
   final String video;
   final Uint8List seriePhoto;
-  final int episode;
-  final int season;
-  final int movie;
+  int episode;
+  int season;
+  int movie;
 
 
   Series(this.id, this.name, this.video,this.seriePhoto,this.episode,this.season,this.movie);

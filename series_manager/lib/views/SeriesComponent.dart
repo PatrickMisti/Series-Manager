@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:series_manager/data/entities/serie.dart';
+import 'package:series_manager/detail.dart';
 import 'package:series_manager/import/SerienManager.dart';
 
 class SeriesComponent extends StatelessWidget {
@@ -20,8 +21,7 @@ class SeriesComponent extends StatelessWidget {
           return GestureDetector(
             onTap: () async {
               SerienManager manager = new SerienManager(series[position]);
-              await manager.fillingManager();
-              Navigator.pushNamed(context, '/detail',arguments: manager);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Detail(manager: manager)));
             },
             child: Container(
               height: 200,

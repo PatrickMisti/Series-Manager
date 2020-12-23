@@ -6,7 +6,7 @@ import 'package:series_manager/import/http-service.dart';
 class SerienManager {
   List<Map> _managerSeriesList;
   List<Map> _managerMovieList;
-  final Series _series;
+  Series _series;
   String _originalUrl;
 
   SerienManager(this._series){
@@ -18,6 +18,42 @@ class SerienManager {
 
   Future fillingManager() async {
     await _getEpisodeAndSeasonFromUrl();
+  }
+
+  Map getSerienManagerStats(){
+    return {
+      "season" : this._series.season,
+      "episode"  : this._series.episode,
+      "movie" : this._series.movie
+    };
+  }
+
+  setCurrentManager(Map selectedFile , String option) {
+    if(_managerMovieList.isNotEmpty && option.compareTo("Filme") == 0){
+      List movieList = _managerMovieList[0]["episode"];
+      var item = movieList.firstWhere((element) => element["id"] == selectedFile["id"], orElse: () => null);
+      if(item != null){
+        int movieIndex = movieList.indexOf(item);
+        this._series.season = null;
+        this._series.episode = null;
+        this._series.movie = movieIndex;
+      }
+    }
+    else {
+      for(Map element in _managerSeriesList) {
+        List<Map> items = element["episode"];
+        var item = items.firstWhere((p) => p == selectedFile,orElse: () => null);
+
+        if(item != null){
+          int episodeIndex = items.indexOf(item);
+          int seasonIndex = _managerSeriesList.indexOf(element);
+          this._series.season = seasonIndex;
+          this._series.episode = episodeIndex;
+          this._series.movie = null;
+          break;
+        }
+      }
+    }
   }
 
   Future _getEpisodeAndSeasonFromUrl([String url]) async {
@@ -83,20 +119,26 @@ class SerienManager {
   Future _htmlGetEpisodeAndSeason(
       List<LinkedHashMap<dynamic, String>> result, uri) async {
     List episodeAndSeason = new List<Map>();
+    int seasonCount = 0;
     for (var item in result) {
       var element = await _httpResponseConvert(
           uri +'/'+ item["href"].toString().split('/').last, 1);
       List<Map> resultEpisode = new List<Map>();
+      int episodeCount = 0;
       for (var episode in element) {
+
         Map map = ({
+          "id": seasonCount.toString() + "-"+ episodeCount.toString(),
           "episodeName": episode["title"].toString(),
           "link": episode["href"].toString()
         });
         resultEpisode.add(map);
+        episodeCount++;
       }
       var resultRaw =
       Map.of({"series": item["title"], "episode": resultEpisode});
       episodeAndSeason.add(resultRaw);
+      seasonCount++;
     }
     _setLists(episodeAndSeason);
   }
