@@ -16,16 +16,9 @@ class HttpService {
 
 
   static Future<bool> getDataSaveInDb(String url) async {
-    List<Series> allSeries = await DataBaseExtension.getAll<Series>();
-    bool exist = false;
+    List<Series> compareSeries = await DataBaseExtension.getComparedOfSeriesUrl(url);
 
-    allSeries.forEach((element) {
-      if (element.video.compareTo(url) == 0 && exist == false) {
-        exist = true;
-      }
-    });
-
-    if (!exist) {
+    if (compareSeries.isEmpty) {
       var result = await HttpService.httpClient(url);
       var header = await _htmlGetImageAndTitle(result, url);
       List<Category> category = await _htmlGetCategoryFromSeries(result);
@@ -34,11 +27,12 @@ class HttpService {
           seriePhoto: header["image"],
           episode: 1,
           season: 1,
+          movie: 0,
           video: url);
       int episodeId = await DataBaseExtension.insert<Series>(series);
       await DataBaseExtension.saveCategoriesToSeries(episodeId,category);
     }
-    return exist;
+    return compareSeries.isEmpty ? true : false;
   }
 
   static Future<List<Category>> _htmlGetCategoryFromSeries(String result) async {
@@ -52,7 +46,7 @@ class HttpService {
       categories.forEach((element) async {
         var hope = savedCategories
             .where((e) =>
-        e.categoryEnum.toLowerCase().compareTo(element.categoryEnum.toLowerCase()) == 0);
+        e.categoryName.toLowerCase().compareTo(element.categoryName.toLowerCase()) == 0);
         if(hope.isEmpty){
           await DataBaseExtension.insert(element).then((value) => element.id = value);
         } else {

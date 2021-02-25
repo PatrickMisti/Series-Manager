@@ -84,11 +84,11 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `categoriesEnum` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `categoriesName` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `video` TEXT, `seriePhoto` BLOB, `episode` INTEGER, `season` INTEGER, `movie` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `categoryseries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category_id` INTEGER, `series_id` INTEGER, FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -121,7 +121,7 @@ class _$CategoryDao extends CategoryDao {
             'category',
             (Category item) => <String, dynamic>{
                   'id': item.id,
-                  'categoriesEnum': item.categoryEnum
+                  'categoriesName': item.categoryName
                 }),
         _categoryUpdateAdapter = UpdateAdapter(
             database,
@@ -129,7 +129,7 @@ class _$CategoryDao extends CategoryDao {
             ['id'],
             (Category item) => <String, dynamic>{
                   'id': item.id,
-                  'categoriesEnum': item.categoryEnum
+                  'categoriesName': item.categoryName
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -139,7 +139,7 @@ class _$CategoryDao extends CategoryDao {
   final QueryAdapter _queryAdapter;
 
   static final _categoryMapper = (Map<String, dynamic> row) =>
-      Category(row['id'] as int, row['categoriesEnum'] as String);
+      Category(row['id'] as int, row['categoriesName'] as String);
 
   final InsertionAdapter<Category> _categoryInsertionAdapter;
 
@@ -249,6 +249,20 @@ class _$SeriesDao extends SeriesDao {
   @override
   Future<void> deleteAllSeries() async {
     await _queryAdapter.queryNoReturn('Delete from Series');
+  }
+
+  @override
+  Future<List<Series>> getSeriesFromCategory(int id) async {
+    return _queryAdapter.queryList(
+        'Select s.* from CategorySeries cs left outer join series s on s.id = cs.series_id where cs.category_id = ?',
+        arguments: <dynamic>[id],
+        mapper: _seriesMapper);
+  }
+
+  @override
+  Future<List<Series>> getSeriesFromUrlCompare(String video) async {
+    return _queryAdapter.queryList('Select * from Series where video = ?',
+        arguments: <dynamic>[video], mapper: _seriesMapper);
   }
 
   @override

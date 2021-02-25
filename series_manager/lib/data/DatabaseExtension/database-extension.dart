@@ -7,7 +7,7 @@ class DataBaseExtension {
   static AppDatabase _db;
 
   static init() async {
-    _db = await $FloorAppDatabase.databaseBuilder('manager.db').build();
+    _db = await $FloorAppDatabase.databaseBuilder('managerV2.db').build();
     //_db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build(); // for testing
   }
 
@@ -74,6 +74,14 @@ class DataBaseExtension {
     }
   }
 
+  static Future<List<Series>> getSeriesFromCategory(int categoryId) async {
+    return await _db.seriesDao.getSeriesFromCategory(categoryId);
+  }
+
+  static Future<List<Series>> getComparedOfSeriesUrl(String url) async {
+    return await _db.seriesDao.getSeriesFromUrlCompare(url);
+  }
+
   static Future<List<Series>> getSeriesFromCategoryId(int categoryId) async {
     List<CategorySeries> raw = await _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
     List<Series> result = new List<Series>();
@@ -97,8 +105,9 @@ class DataBaseExtension {
   static dispose() async => await _db.close();
 
   static deleteDB() {
+    _db.database.delete('categoryseries');
     _db.database.delete('series');
     _db.database.delete('category');
-    _db.database.delete('categoryseries');
+
   }
 }

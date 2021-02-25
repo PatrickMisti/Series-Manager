@@ -44,6 +44,12 @@ abstract class SeriesDao{
 
   @Query('Delete from Series')
   Future<void> deleteAllSeries();
+
+  @Query('Select s.* from CategorySeries cs left outer join series s on s.id = cs.series_id where cs.category_id = :id')
+  Future<List<Series>> getSeriesFromCategory(int id);
+
+  @Query('Select * from Series where video = :video')
+  Future<List<Series>> getSeriesFromUrlCompare(String video);
 }
 
 @dao

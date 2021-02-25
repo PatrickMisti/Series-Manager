@@ -4,19 +4,19 @@ import 'package:floor/floor.dart';
 class Category {
  @PrimaryKey(autoGenerate: true)
  int id;
- @ColumnInfo(name: 'categoriesEnum',nullable: false)
- String categoryEnum;
+ @ColumnInfo(name: 'categoriesName',nullable: false)
+ String categoryName;
 
 
-  Category(this.id,this.categoryEnum);
+  Category(this.id,this.categoryName);
 
-  Category.fetching({this.id,this.categoryEnum});
+  Category.fetching({this.id,this.categoryName});
 
-  Category.fromCategory(this.id,this.categoryEnum){
-   this.categoryEnum = this.categoryEnum.split('.')[1];
+  Category.fromCategory(this.id,this.categoryName){
+   this.categoryName = this.categoryName.split('.')[1];
  }
 
   stringToMap(String data) {
-    return categoryEnum.split(',');
+    return categoryName.split(',');
   }
 }

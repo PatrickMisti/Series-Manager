@@ -23,4 +23,10 @@ class Series {
   stringToMap() {
     return video.split('||');
   }
+
+  setEpisode(int movie, int season, int episode) {
+    this.movie = movie;
+    this.season = season;
+    this.episode = episode;
+  }
 }
