@@ -45,7 +45,15 @@ class _Detail extends State<Detail> {
               image: DecorationImage(image: MemoryImage(widget._series.seriePhoto))
             ),
           ),
-          SeriesAndMovieButtonView(_detailManager),
+          FutureBuilder(
+            future: _detailManager.startFillingList(),
+            builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.done)
+              return SeriesAndMovieButtonView(_detailManager);
+            else
+              return Container(child: Center(child: CupertinoActivityIndicator()));
+          },)
+
         ],
       ),
     );

@@ -4,15 +4,15 @@ import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/serie.dart';
 
 class SeriesView extends StatelessWidget {
-  final int _categoryid;
+  final int _categoryId;
   int _indexOfItem = 0;
 
-  SeriesView(this._categoryid);
+  SeriesView(this._categoryId,{Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: DataBaseExtension.getSeriesFromCategory(_categoryid),
+      future: DataBaseExtension.getSeriesFromCategory(_categoryId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<Series> seriesList = snapshot.data;

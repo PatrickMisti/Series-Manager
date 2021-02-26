@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:html/parser.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
@@ -39,12 +38,12 @@ class DetailManager {
   
   setCurrentEpisode(ManagerSerie selected) async {
     for (ManagerSeason items in _manager) {
-      if (items.serieList.where((element) => element.episodeId == selected.episodeId).toList() != null) {
+      if (items.serieList.contains(selected)) {
         if (items.seasonName == "Movie") {
           _series.setEpisode(items.serieList.indexOf(selected) + 1, 0, 0);
         }
         else {
-          _series.setEpisode(0, _manager.indexOf(items) + 1, items.serieList.indexOf(selected) + 1);
+          _series.setEpisode(0, int.parse(items.seasonName), items.serieList.indexOf(selected) + 1);
         }
         break;
       }
@@ -52,19 +51,21 @@ class DetailManager {
     await DataBaseExtension.update<Series>(_series);
   }
 
-  //todo get current episode url for hoster
+  String getCurrentEpisodeUrl() {
+    ManagerSerie element = this.getCurrentEpisode();
+    return element.serieLink;
+  }
   
-  int getCurrentEpisode() {
+  ManagerSerie getCurrentEpisode() {
     if(_series.movie != 0) {
       ManagerSeason list = _manager.where((element) => element.seasonName == "Movie").first;
-      return int.parse(list.serieList[_series.movie - 1].episodeId);
+      return list.serieList[_series.movie - 1];
     }
     else {
       ManagerSeason list = _manager.where((element) => int.tryParse(element.seasonName) == _series.season).first;
-      return int.parse(list.serieList[_series.episode - 1].episodeId);
+      return list.serieList[_series.episode - 1];
     }
   }
-
 
   startFillingList() async {
     var seasons = await _getSeasonOrEpisodeFromLink(_series.video);
@@ -89,6 +90,7 @@ class DetailManager {
       }
       _manager.add(resultSeason);
     }
+    _manager.toList(growable: false);
   }
 
   _getSeasonOrEpisodeFromLink(String url, {int choose = 0}) async {

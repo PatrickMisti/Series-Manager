@@ -39,7 +39,7 @@ class CategoryView extends StatelessWidget {
                               fontSize: 20
                             ),
                           )),
-                      Flexible(child: SeriesView(categoryList[index].id))
+                      Flexible(child: SeriesView(categoryList[index].id, key: UniqueKey()))
                     ],
                   ),
                 );
