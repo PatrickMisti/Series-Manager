@@ -275,6 +275,13 @@ class _$SeriesDao extends SeriesDao {
   Future<void> updateSeries(Series series) async {
     await _seriesUpdateAdapter.update(series, OnConflictStrategy.abort);
   }
+
+  @override
+  Future<void> deleteSeriesAndCatSerFromId(int id) async {
+    await _queryAdapter.query('DELETE cs,ser FROM categoryseries cs LEFT JOIN series ser on cs.series_id = ser.id WHERE ser.id = ?',
+        arguments: <dynamic>[id],
+        mapper: _seriesMapper);
+  }
 }
 
 class _$CategorySeriesDao extends CategorySeriesDao {

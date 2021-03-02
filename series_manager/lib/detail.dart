@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/serie.dart';
 import 'package:series_manager/import/DetailManager.dart';
 import 'package:series_manager/views/detail/SeriesAndMovieButtonView.dart';
@@ -17,6 +18,11 @@ class Detail extends StatefulWidget {
 class _Detail extends State<Detail> {
   DetailManager _detailManager;
 
+  deleteSeries() async {
+    await DataBaseExtension.deleteSeriesAndCatSerFromId(widget._series.id);
+    setState(() {});
+    Navigator.pop(context);
+  }
 
   @override
   void initState() {
@@ -30,6 +36,10 @@ class _Detail extends State<Detail> {
       backgroundColor: CupertinoColors.black,
       navigationBar: CupertinoNavigationBar(
         backgroundColor: Colors.teal,
+        trailing: GestureDetector(
+          onTap: () => deleteSeries(),
+          child: Icon(Icons.delete, color: CupertinoColors.white,),
+        ),
         middle: Text(widget._series.name, style: TextStyle(color: CupertinoColors.white)),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
