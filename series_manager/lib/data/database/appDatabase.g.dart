@@ -266,6 +266,12 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
+  Future<List<Series>> findSeriesByName(String input) async {
+    return _queryAdapter.queryList('Select * from Series where name Like ?',
+        arguments: <dynamic>['%$input%'], mapper: _seriesMapper);
+  }
+
+  @override
   Future<int> insertSeries(Series series) {
     return _seriesInsertionAdapter.insertAndReturnId(
         series, OnConflictStrategy.abort);

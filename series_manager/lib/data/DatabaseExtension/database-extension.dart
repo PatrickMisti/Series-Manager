@@ -74,6 +74,10 @@ class DataBaseExtension {
     }
   }
 
+  static Future<List<Series>> findSeriesByName(String name) async {
+    return await _db.seriesDao.findSeriesByName(name);
+  }
+
   static Future<List<Series>> getSeriesFromCategory(int categoryId) async {
     return await _db.seriesDao.getSeriesFromCategory(categoryId);
   }

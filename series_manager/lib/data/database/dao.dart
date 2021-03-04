@@ -50,6 +50,9 @@ abstract class SeriesDao{
 
   @Query('Select * from Series where video = :video')
   Future<List<Series>> getSeriesFromUrlCompare(String video);
+
+  @Query('Select * from Series where name Like :input')
+  Future<List<Series>> findSeriesByName(String input);
 }
 
 @dao
