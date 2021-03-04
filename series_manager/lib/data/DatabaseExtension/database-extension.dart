@@ -79,7 +79,13 @@ class DataBaseExtension {
   }
 
   static Future<void> deleteSeriesAndCatSerFromId(int seriesId) async {
-    await _db.seriesDao.deleteSeriesAndCatSerFromId(seriesId);
+    List<CategorySeries> result = await _db.categorySeriesDao.getCategoryFromSeriesId(seriesId);
+    await _db.categorySeriesDao.deleteCategorySeriesFromSeriesId(seriesId);
+    await _db.seriesDao.deleteSeries(seriesId);
+
+    for (CategorySeries item in result)
+      if((await _db.categorySeriesDao.getSeriesFromCategoryId(item.categoryId)).isEmpty)
+        await _db.categoryDao.deleteCategory(item.categoryId);
   }
 
   static Future<List<Series>> getSeriesFromCategory(int categoryId) async {

@@ -53,9 +53,6 @@ abstract class SeriesDao{
 
   @Query('Select * from Series where name Like :input')
   Future<List<Series>> findSeriesByName(String input);
-
-  @Query('DELETE cs,ser FROM categoryseries cs LEFT JOIN series ser on cs.series_id = ser.id WHERE ser.id = :id')
-  Future<void> deleteSeriesAndCatSerFromId(int id);
 }
 
 @dao
@@ -81,6 +78,9 @@ abstract class CategorySeriesDao{
 
   @Query('Delete from CategorySeries where id = :id')
   Future<void> deleteCategorySeries(int id);
+
+  @Query('Delete from CategorySeries where series_Id = :id')
+  Future<void> deleteCategorySeriesFromSeriesId(int id);
 
   @Query('Delete from CategorySeries')
   Future<void> deleteAllCategorySeries();
