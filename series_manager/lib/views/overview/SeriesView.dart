@@ -5,12 +5,12 @@ import 'package:series_manager/data/entities/serie.dart';
 
 class SeriesView extends StatelessWidget {
   final int _categoryId;
-  int _indexOfItem = 0;
 
-  SeriesView(this._categoryId,{Key key}) : super(key: key);
+  SeriesView(this._categoryId);
 
   @override
   Widget build(BuildContext context) {
+    int _indexOfItem = 0;
     return FutureBuilder(
       future: DataBaseExtension.getSeriesFromCategory(_categoryId),
       builder: (context, snapshot) {
@@ -28,7 +28,7 @@ class SeriesView extends StatelessWidget {
                 itemExtent: 300,
                 children: List<Widget>.generate(seriesList.length, (index) {
                   Series series = seriesList[index];
-                  return Container(
+                  return new Container(
                     child: RotatedBox(
                       quarterTurns: 1,
                       child: Column(

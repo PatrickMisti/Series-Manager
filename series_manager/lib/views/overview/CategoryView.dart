@@ -19,7 +19,7 @@ class CategoryView extends StatelessWidget {
       future: DataBaseExtension.getAll<Category>(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          List<Category> categoryList = snapshot.data;
+          final List<Category> categoryList = snapshot.data;
           return ListView.builder(
               itemCount: categoryList.length,
               itemBuilder: (_, index) {
@@ -39,7 +39,7 @@ class CategoryView extends StatelessWidget {
                               fontSize: 20
                             ),
                           )),
-                      Flexible(child: SeriesView(categoryList[index].id, key: UniqueKey()))
+                      Flexible(child: SeriesView(categoryList[index].id))
                     ],
                   ),
                 );
