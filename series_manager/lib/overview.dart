@@ -8,8 +8,29 @@ class Overview extends StatefulWidget {
   _Overview createState() => _Overview();
 }
 
-class _Overview extends State<Overview> {
+class _Overview extends State<Overview> with TickerProviderStateMixin, SingleTickerProviderStateMixin {
   final urlInputController = TextEditingController();
+  AnimationController _controller;
+  Animation _animation;
+
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this
+    );
+
+    _animation = Tween<double>(begin: 30.0,end: 0.0).animate(_controller)
+    ..addStatusListener((status) async {
+      if (status == AnimationStatus.completed) {
+       await _controller.reverse();
+      }
+    });
+
+    _animation.addListener(() {setState(() {});});
+    super.initState();
+  }
 
   saveUrlToDatabase(String url) async {
     String alertDialog = "";
@@ -97,6 +118,7 @@ class _Overview extends State<Overview> {
         backgroundColor: Colors.teal,
         middle: Text("Serien", style: TextStyle(color: CupertinoColors.white)),
         leading: GestureDetector(
+          onTap: () => Navigator.pushNamed(context, "/search"),
           child: Icon(Icons.search,color: CupertinoColors.white),
         ),
         trailing: GestureDetector(

@@ -266,6 +266,12 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
+  Future<List<Series>> findSeriesByName(String input) async {
+    return _queryAdapter.queryList('Select * from Series where name Like ?',
+        arguments: <dynamic>[input], mapper: _seriesMapper);
+  }
+
+  @override
   Future<int> insertSeries(Series series) {
     return _seriesInsertionAdapter.insertAndReturnId(
         series, OnConflictStrategy.abort);
@@ -343,6 +349,13 @@ class _$CategorySeriesDao extends CategorySeriesDao {
   @override
   Future<void> deleteCategorySeries(int id) async {
     await _queryAdapter.queryNoReturn('Delete from CategorySeries where id = ?',
+        arguments: <dynamic>[id]);
+  }
+
+  @override
+  Future<void> deleteCategorySeriesFromSeriesId(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'Delete from CategorySeries where series_Id = ?',
         arguments: <dynamic>[id]);
   }
 
