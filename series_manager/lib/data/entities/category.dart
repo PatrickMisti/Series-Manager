@@ -4,7 +4,7 @@ import 'package:floor/floor.dart';
 class Category {
  @PrimaryKey(autoGenerate: true)
  int id;
- @ColumnInfo(name: 'categoriesName',nullable: false)
+ @ColumnInfo(name: 'categoriesName')
  String categoryName;
 
 

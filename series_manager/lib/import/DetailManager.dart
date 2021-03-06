@@ -1,4 +1,3 @@
-
 import 'package:html/parser.dart';
 import 'package:series_manager/data/DatabaseExtension/database-extension.dart';
 import 'package:series_manager/data/entities/manager.dart';
@@ -9,7 +8,7 @@ import 'package:xml_parser/xml_parser.dart';
 
 class DetailManager {
   final Series _series;
-  List<ManagerSeason> _manager = new List<ManagerSeason>();
+  List<ManagerSeason> _manager = <ManagerSeason>[];
 
   Series get getSeries => _series;
 
@@ -18,7 +17,7 @@ class DetailManager {
   List<ManagerSeason> get currentSeasonList => _getCurrentList();
 
   _getCurrentList({bool selector = false}) {
-    List<ManagerSeason> result = new List<ManagerSeason>();
+    List<ManagerSeason> result = <ManagerSeason>[];
     _manager.forEach((element) {
       if(selector){
         if(element.seasonName == "Movie"){
@@ -102,7 +101,7 @@ class DetailManager {
   }
 
   Future<List<HosterLanguageManager>> getHosterAndLanguageForSeries(String url) async {
-    List<HosterLanguageManager> langManager = new List<HosterLanguageManager>();
+    List<HosterLanguageManager> langManager = <HosterLanguageManager>[];
     var html = parse(await HttpService.httpClient(url)).getElementsByClassName('hosterSiteVideo')[0];
     var language = XmlDocument.fromString(html.getElementsByClassName("changeLanguageBox")[0].innerHtml);
 
@@ -139,7 +138,7 @@ class DetailManager {
     List<XmlNode> hoster = XmlDocument
         .fromString(html.getElementsByClassName('row')[0].innerHtml)
         .children;
-    List<HosterManager> hosterManager = new List<HosterManager>();
+    List<HosterManager> hosterManager = <HosterManager>[];
     for (XmlElement element in hoster) {
       hosterManager.add(
           new HosterManager(
@@ -155,7 +154,7 @@ class DetailManager {
 
 extension ConvertListOfManagerSeason on List<ManagerSeason> {
   List<ManagerSerie> convertToManagerSerieList() {
-    List<ManagerSerie> result = new List<ManagerSerie>();
+    List<ManagerSerie> result = <ManagerSerie>[];
     this.forEach((element) => result.addAll(element.serieList));
     return result;
   }

@@ -98,7 +98,7 @@ class DataBaseExtension {
 
   static Future<List<Series>> getSeriesFromCategoryId(int categoryId) async {
     List<CategorySeries> raw = await _db.categorySeriesDao.getSeriesFromCategoryId(categoryId);
-    List<Series> result = new List<Series>();
+    List<Series> result = <Series>[];
     for(CategorySeries element in raw) {
       Series series = await _db.seriesDao.getSeriesById(element.seriesId);
       result.add(series);

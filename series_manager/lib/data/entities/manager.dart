@@ -1,6 +1,6 @@
 class ManagerSeason {
   final String seasonName;
-  List<ManagerSerie> serieList = new List<ManagerSerie>();
+  List<ManagerSerie> serieList = <ManagerSerie>[];
 
   ManagerSeason(this.seasonName);
 
@@ -18,7 +18,7 @@ class ManagerSerie {
 class HosterLanguageManager {
   final String language;
   final int id;
-  List<HosterManager> hosterManagerList = new List<HosterManager>();
+  List<HosterManager> hosterManagerList = <HosterManager>[];
 
   HosterLanguageManager(this.id, this.language);
 }
